@@ -808,6 +808,10 @@ export default function TravelPage() {
                                     type="date"
                                     {...register('departureFromEventDepartureDate')}
                                     className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
+                                    style={{ 
+                                      color: '#111827',
+                                      WebkitTextFillColor: '#111827'
+                                    }}
                                   />
                                 </div>
                                 <div>
@@ -816,6 +820,10 @@ export default function TravelPage() {
                                     type="time"
                                     {...register('departureFromEventDepartureTime')}
                                     className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
+                                    style={{ 
+                                      color: '#111827',
+                                      WebkitTextFillColor: '#111827'
+                                    }}
                                   />
                                 </div>
                               </div>
@@ -827,6 +835,10 @@ export default function TravelPage() {
                                     type="date"
                                     {...register('departureFromEventArrivalDate')}
                                     className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
+                                    style={{ 
+                                      color: '#111827',
+                                      WebkitTextFillColor: '#111827'
+                                    }}
                                   />
                                 </div>
                                 <div>
@@ -835,6 +847,10 @@ export default function TravelPage() {
                                     type="time"
                                     {...register('departureFromEventArrivalTime')}
                                     className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
+                                    style={{ 
+                                      color: '#111827',
+                                      WebkitTextFillColor: '#111827'
+                                    }}
                                   />
                                 </div>
                               </div>
@@ -901,7 +917,7 @@ export default function TravelPage() {
                                   <input
                                     type="date"
                                     {...register('arrivalFromEventArrivalDate')}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
+                                    className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
                                   />
                                 </div>
                                 <div>
