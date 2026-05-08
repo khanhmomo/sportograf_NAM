@@ -17,7 +17,7 @@ export default function Home() {
         {/* Region Selection */}
         <div className="flex flex-col sm:flex-row gap-6 max-w-5xl mx-auto mb-16">
           <Link
-            href="/na/events"
+            href="/na"
             className="flex-1 bg-white rounded-lg shadow-lg p-12 hover:shadow-xl transition-all duration-300 text-center border-4 border-blue-500 hover:border-blue-600"
           >
             <h2 className="text-3xl font-bold text-blue-600 mb-2">

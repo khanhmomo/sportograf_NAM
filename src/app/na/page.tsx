@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Calendar, Plane } from 'lucide-react'
+import { Calendar, Plane, Users } from 'lucide-react'
 
 export default function NorthAmericaPage() {
   return (
@@ -7,10 +7,10 @@ export default function NorthAmericaPage() {
       <div className="container mx-auto px-4 py-16">
         <div className="text-center mb-16">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            North America
+            Sportograf North America - Event Tool
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Request events and submit travel information
+            Choose events and submit travel information in one simple platform
           </p>
         </div>
 
@@ -26,7 +26,7 @@ export default function NorthAmericaPage() {
               </h2>
             </div>
             <p className="text-gray-600 mb-4">
-              View available events and request participation
+              View available events and register for the ones you want to attend
             </p>
             <div className="text-blue-600 font-medium hover:text-blue-700">
               Explore Events →
