@@ -221,16 +221,16 @@ export default function TravelPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-6 sm:py-8">
         <div className="max-w-7xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Travel Information</h1>
-            <p className="text-gray-600">Submit your travel details for Sportograf North America events</p>
+          <div className="mb-6 sm:mb-8">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Travel Information</h1>
+            <p className="text-sm sm:text-base text-gray-600">Submit your travel details for Sportograf North America events</p>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-6">
             {/* Left Column - Basic Info */}
-            <div className="bg-white rounded-lg shadow-lg p-6">
+            <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {/* Personal Information */}
               <div className="space-y-4">
@@ -369,13 +369,13 @@ export default function TravelPage() {
 
               {/* Suggested Flights */}
               {selectedEventSuggestedFlights.length > 0 && (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <h3 className="text-sm font-semibold text-blue-900 mb-3 flex items-center">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4">
+                  <h3 className="text-xs sm:text-sm font-semibold text-blue-900 mb-3 flex items-center">
                     <Plane className="h-4 w-4 mr-2" />
                     Suggested Flights for This Event
                   </h3>
                   <div className="overflow-x-auto">
-                    <table className="min-w-full text-sm">
+                    <table className="min-w-full text-xs sm:text-sm">
                       <thead className="bg-blue-100">
                         <tr>
                           <th className="px-3 py-2 text-left text-xs font-medium text-blue-800 uppercase">From</th>
@@ -441,7 +441,7 @@ export default function TravelPage() {
                                       <img
                                         src={flight.screenshot}
                                         alt="Flight screenshot full size"
-                                        className="max-w-full max-h-96 object-contain rounded border border-gray-300"
+                                        className="max-w-full max-h-64 sm:max-h-96 object-contain rounded border border-gray-300"
                                       />
                                     </div>
                                     <p className="text-xs text-gray-600 mt-2">Flight: {flight.from} → {flight.to}</p>
