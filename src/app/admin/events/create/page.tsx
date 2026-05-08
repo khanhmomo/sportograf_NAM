@@ -89,11 +89,14 @@ export default function CreateEventPage() {
           const data = await response.json()
           updateSuggestedFlight(index, 'screenshot', data.url)
         } else {
-          console.error('Upload failed')
+          const error = await response.json()
+          console.error('Upload failed:', error.error)
+          alert(`Upload failed: ${error.error}`)
         }
       }
     } catch (error) {
       console.error('Upload error:', error)
+      alert('Upload error occurred')
     }
   }
 

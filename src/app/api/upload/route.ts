@@ -20,6 +20,21 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Configure Cloudinary
+    cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
+    })
+
+    // Check if Cloudinary is configured
+    if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+      return NextResponse.json(
+        { error: 'Cloudinary not configured. Check environment variables.' },
+        { status: 500 }
+      )
+    }
+
     // Upload to Cloudinary
     const result = await cloudinary.uploader.upload(file, {
       folder: folder || 'flight-screenshots',
@@ -30,10 +45,10 @@ export async function POST(request: NextRequest) {
       url: result.secure_url,
       publicId: result.public_id,
     })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Upload error:', error)
     return NextResponse.json(
-      { error: 'Failed to upload image' },
+      { error: error.message || 'Failed to upload image' },
       { status: 500 }
     )
   }
