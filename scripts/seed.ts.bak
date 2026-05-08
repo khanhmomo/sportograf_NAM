@@ -1,0 +1,107 @@
+import { PrismaClient } from '@prisma/client'
+import { config } from 'dotenv'
+
+config()
+
+const prisma = new PrismaClient()
+
+async function main() {
+  // Create sample events
+  const event1 = await prisma.event.create({
+    data: {
+      title: 'Annual Company Meeting',
+      description: 'Join us for our yearly company-wide meeting to discuss achievements and future goals.',
+      location: 'Main Conference Room',
+      startDate: new Date('2024-06-15T09:00:00'),
+      endDate: new Date('2024-06-15T17:00:00'),
+      maxCapacity: 50,
+      isActive: true,
+    },
+  })
+
+  const event2 = await prisma.event.create({
+    data: {
+      title: 'Team Building Workshop',
+      description: 'Interactive workshop focused on improving team collaboration and communication.',
+      location: 'Outdoor Training Center',
+      startDate: new Date('2024-06-20T10:00:00'),
+      endDate: new Date('2024-06-20T16:00:00'),
+      maxCapacity: 25,
+      isActive: true,
+    },
+  })
+
+  const event3 = await prisma.event.create({
+    data: {
+      title: 'Product Launch Celebration',
+      description: 'Celebrate the launch of our new product with food, drinks, and presentations.',
+      location: 'Rooftop Lounge',
+      startDate: new Date('2024-07-01T18:00:00'),
+      endDate: new Date('2024-07-01T22:00:00'),
+      maxCapacity: 100,
+      isActive: true,
+    },
+  })
+
+  // Create a sample user
+  const user = await prisma.user.create({
+    data: {
+      email: 'demo@crew-events.com',
+      name: 'Demo User',
+      role: 'CREW',
+    },
+  })
+
+  // Create sample registrations
+  await prisma.eventRegistration.create({
+    data: {
+      userId: user.id,
+      eventId: event1.id,
+      status: 'REGISTERED',
+    },
+  })
+
+  await prisma.eventRegistration.create({
+    data: {
+      userId: user.id,
+      eventId: event2.id,
+      status: 'CONFIRMED',
+    },
+  })
+
+  // Create sample travel form
+  await prisma.travelForm.create({
+    data: {
+      userId: user.id,
+      eventId: event1.id,
+      name: 'Sample User',
+      acronym: 'SAMPLE',
+      email: 'sample@example.com',
+      phoneNumber: '(555) 123-4567',
+      travelMethod: 'flight',
+      arrivalFromEventFlightNumber: 'AA1234',
+      arrivalFromEventDepartureAirport: 'JFK',
+      arrivalFromEventArrivalAirport: 'SFO',
+      arrivalFromEventDepartureDate: '2024-06-14',
+      arrivalFromEventDepartureTime: '08:00',
+      arrivalFromEventArrivalDate: '2024-06-14',
+      arrivalFromEventArrivalTime: '11:00',
+      accommodationNeeded: 'yes',
+      checkInDate: '2024-06-14',
+      checkOutDate: '2024-06-16',
+      specialRequests: 'Vegetarian meal preferred',
+      status: 'PENDING',
+    },
+  })
+
+  console.log('Database seeded successfully!')
+}
+
+main()
+  .catch((e) => {
+    console.error(e)
+    process.exit(1)
+  })
+  .finally(async () => {
+    await prisma.$disconnect()
+  })
