@@ -334,10 +334,10 @@ export default function EventsPage() {
                         <div className="text-sm font-medium text-gray-900">{event.title}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                        {format(new Date(event.startDate), 'MMM d, yyyy')}
+                        {format(new Date(event.startDate), 'MM/dd/yyyy')}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                        {event.endDate ? format(new Date(event.endDate), 'MMM d, yyyy') : '-'}
+                        {event.endDate ? format(new Date(event.endDate), 'MM/dd/yyyy') : '-'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                         {event.location || '-'}
@@ -360,12 +360,12 @@ export default function EventsPage() {
                       <div className="flex flex-wrap gap-2 text-xs text-gray-600">
                         <div className="flex items-center">
                           <Calendar className="h-3 w-3 mr-1" />
-                          {format(new Date(event.startDate), 'MMM d, yyyy')}
+                          {format(new Date(event.startDate), 'MM/dd/yyyy')}
                         </div>
                         {event.endDate && (
                           <div className="flex items-center">
                             <Calendar className="h-3 w-3 mr-1" />
-                            {format(new Date(event.endDate), 'MMM d, yyyy')}
+                            {format(new Date(event.endDate), 'MM/dd/yyyy')}
                           </div>
                         )}
                         {event.location && (
@@ -469,7 +469,7 @@ export default function EventsPage() {
                               <div className="text-xs text-gray-600 mt-1 flex flex-wrap items-center gap-2 md:gap-3">
                                 <div className="flex items-center">
                                   <Calendar className="h-3 w-3 mr-1" />
-                                  {format(new Date(event.startDate), 'MMM d, yyyy')}
+                                  {format(new Date(event.startDate), 'MM/dd/yyyy')}
                                 </div>
                                 {event.location && (
                                   <div className="flex items-center">

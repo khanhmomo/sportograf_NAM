@@ -395,8 +395,8 @@ export default function AdminDashboard() {
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm text-gray-500">
                               {event.endDate 
-                                ? `${format(new Date(event.startDate), 'MMM d')} - ${format(new Date(event.endDate), 'MMM d, yyyy')}`
-                                : format(new Date(event.startDate), 'MMM d, yyyy')
+                                ? `${format(new Date(event.startDate), 'MM/dd/yyyy')} - ${format(new Date(event.endDate), 'MM/dd/yyyy')}`
+                                : format(new Date(event.startDate), 'MM/dd/yyyy')
                               }
                             </div>
                           </td>
@@ -470,8 +470,8 @@ export default function AdminDashboard() {
                           <div className="flex items-center text-xs text-gray-500 mt-1">
                             <Calendar className="h-3 w-3 mr-1" />
                             {event.endDate 
-                              ? `${format(new Date(event.startDate), 'MMM d')} - ${format(new Date(event.endDate), 'MMM d, yyyy')}`
-                              : format(new Date(event.startDate), 'MMM d, yyyy')
+                              ? `${format(new Date(event.startDate), 'MM/dd/yyyy')} - ${format(new Date(event.endDate), 'MM/dd/yyyy')}`
+                              : format(new Date(event.startDate), 'MM/dd/yyyy')
                             }
                           </div>
                         </div>

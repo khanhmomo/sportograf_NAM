@@ -13,6 +13,7 @@ const travelFormSchema = z.object({
   acronym: z.string().min(1, 'Acronym is required'),
   email: z.string().email('Valid email is required'),
   phoneNumber: z.string().min(1, 'Phone number is required'),
+  gender: z.enum(['male', 'female', 'other', 'prefer-not-to-say']),
   travelMethod: z.enum(['flight', 'car', 'bus']),
   // Arrival from event fields
   arrivalFromEventFlightNumber: z.string().optional(),
@@ -40,10 +41,10 @@ const travelFormSchema = z.object({
   busArrivalTime: z.string().optional(),
   busDepartureDate: z.string().optional(),
   busDepartureTime: z.string().optional(),
-  // Accommodation request
+  // Accommodation request - hotel nights
   accommodationNeeded: z.enum(['yes', 'no']).optional(),
-  checkInDate: z.string().optional(),
-  checkOutDate: z.string().optional(),
+  hotelNights: z.array(z.string()).optional(),
+  otherHotelNight: z.string().optional(),
   specialRequests: z.string().optional(),
 })
 
@@ -263,35 +264,56 @@ export default function TravelPage() {
                   
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Phone Number *
+                      Gender *
                     </label>
-                    <div className="relative">
-                      <input
-                        type="tel"
-                        {...register('phoneNumber', {
-                          onChange: (e) => {
-                            const formattedValue = formatPhoneNumber(e.target.value)
-                            e.target.value = formattedValue
-                            return formattedValue
-                          }
-                        })}
-                        className="w-full px-3 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
-                        placeholder="(555) 123-4567"
-                        maxLength={14}
-                      />
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg className="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                        </svg>
-                      </div>
-                    </div>
-                    <p className="mt-1 text-xs text-gray-500">Format: (555) 123-4567</p>
-                    {errors.phoneNumber && (
+                    <select
+                      {...register('gender')}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                    >
+                      <option value="">Select gender...</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="other">Other</option>
+                      <option value="prefer-not-to-say">Prefer not to say</option>
+                    </select>
+                    {errors.gender && (
                       <p className="mt-1 text-sm text-red-600">
-                        {errors.phoneNumber.message}
+                        {errors.gender.message}
                       </p>
                     )}
                   </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Phone Number *
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="tel"
+                      {...register('phoneNumber', {
+                        onChange: (e) => {
+                          const formattedValue = formatPhoneNumber(e.target.value)
+                          e.target.value = formattedValue
+                          return formattedValue
+                        }
+                      })}
+                      className="w-full px-3 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
+                      placeholder="(555) 123-4567"
+                      maxLength={14}
+                    />
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <svg className="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                      </svg>
+                    </div>
+                  </div>
+                  <p className="mt-1 text-xs text-gray-500">Format: (555) 123-4567</p>
+                  {errors.phoneNumber && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.phoneNumber.message}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -308,7 +330,7 @@ export default function TravelPage() {
                   <option value="" className="text-gray-500">Choose an event...</option>
                   {events.map((event) => (
                     <option key={event.id} value={event.id}>
-                      {event.title} - {event.location || 'TBD'} ({new Date(event.startDate).toLocaleDateString()})
+                      {event.title} - {event.location || 'TBD'} ({new Date(event.startDate).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })})
                     </option>
                   ))}
                 </select>
@@ -694,22 +716,71 @@ export default function TravelPage() {
 
                   {watch('accommodationNeeded') === 'yes' && (
                     <div className="space-y-3 pl-6 border-l-2 border-purple-200">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Check-in Date</label>
-                          <input
-                            type="date"
-                            {...register('checkInDate')}
-                            className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-gray-500"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Check-out Date</label>
-                          <input
-                            type="date"
-                            {...register('checkOutDate')}
-                            className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-gray-500"
-                          />
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Hotel Nights Needed</label>
+                        <div className="space-y-2">
+                          <label className="flex items-center">
+                            <input
+                              type="checkbox"
+                              value="wednesday"
+                              {...register('hotelNights')}
+                              className="w-4 h-4 text-purple-600 focus:ring-purple-500 border-gray-300 mr-2"
+                            />
+                            <span className="text-gray-700">Wednesday night</span>
+                          </label>
+                          <label className="flex items-center">
+                            <input
+                              type="checkbox"
+                              value="thursday"
+                              {...register('hotelNights')}
+                              className="w-4 h-4 text-purple-600 focus:ring-purple-500 border-gray-300 mr-2"
+                            />
+                            <span className="text-gray-700">Thursday night</span>
+                          </label>
+                          <label className="flex items-center">
+                            <input
+                              type="checkbox"
+                              value="friday"
+                              {...register('hotelNights')}
+                              className="w-4 h-4 text-purple-600 focus:ring-purple-500 border-gray-300 mr-2"
+                            />
+                            <span className="text-gray-700">Friday night</span>
+                          </label>
+                          <label className="flex items-center">
+                            <input
+                              type="checkbox"
+                              value="saturday"
+                              {...register('hotelNights')}
+                              className="w-4 h-4 text-purple-600 focus:ring-purple-500 border-gray-300 mr-2"
+                            />
+                            <span className="text-gray-700">Saturday night</span>
+                          </label>
+                          <label className="flex items-center">
+                            <input
+                              type="checkbox"
+                              value="sunday"
+                              {...register('hotelNights')}
+                              className="w-4 h-4 text-purple-600 focus:ring-purple-500 border-gray-300 mr-2"
+                            />
+                            <span className="text-gray-700">Sunday night</span>
+                          </label>
+                          <label className="flex items-center">
+                            <input
+                              type="checkbox"
+                              value="other"
+                              {...register('hotelNights')}
+                              className="w-4 h-4 text-purple-600 focus:ring-purple-500 border-gray-300 mr-2"
+                            />
+                            <span className="text-gray-700">Other:</span>
+                          </label>
+                          {watch('hotelNights')?.includes('other') && (
+                            <input
+                              type="text"
+                              {...register('otherHotelNight')}
+                              placeholder="Please specify"
+                              className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-gray-500 mt-2"
+                            />
+                          )}
                         </div>
                       </div>
                     </div>

@@ -1,17 +1,44 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getTravelFormsCollection } from '@/lib/mongodb'
+import { ObjectId } from 'mongodb'
 
-// Mock storage - same as travel API
-let mockTravelForms: any[] = []
-
-// Initialize with existing data (in a real app, this would come from database)
-const initializeMockData = async () => {
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/travel`)
-    if (response.ok) {
-      mockTravelForms = await response.json()
+    const { id } = await params
+    const body = await request.json()
+    
+    const travelFormsCollection = await getTravelFormsCollection()
+    
+    // Update the travel form
+    const result = await travelFormsCollection.updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $set: {
+          ...body,
+          updatedAt: new Date()
+        }
+      }
+    )
+    
+    if (result.matchedCount === 0) {
+      return NextResponse.json(
+        { error: 'Travel form not found' },
+        { status: 404 }
+      )
     }
+    
+    return NextResponse.json({
+      message: 'Travel form updated successfully'
+    })
   } catch (error) {
-    console.error('Failed to initialize mock data:', error)
+    console.error('Failed to update travel form:', error)
+    return NextResponse.json(
+      { error: 'Failed to update travel form' },
+      { status: 500 }
+    )
   }
 }
 
@@ -20,18 +47,15 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Initialize mock data if needed
-    if (mockTravelForms.length === 0) {
-      await initializeMockData()
-    }
-
     const { id } = await params
     
-    // Find and delete the travel form
-    const initialLength = mockTravelForms.length
-    mockTravelForms = mockTravelForms.filter(form => form.id !== id)
+    const travelFormsCollection = await getTravelFormsCollection()
     
-    if (mockTravelForms.length === initialLength) {
+    const result = await travelFormsCollection.deleteOne({
+      _id: new ObjectId(id)
+    })
+    
+    if (result.deletedCount === 0) {
       return NextResponse.json(
         { error: 'Travel form not found' },
         { status: 404 }
