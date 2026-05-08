@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     
     if (existingForm) {
       return NextResponse.json(
-        { error: 'A travel form has already been submitted for this event with this email or acronym' },
+        { error: 'You have already submitted a travel form for this event. Please contact admin to change it.' },
         { status: 409 }
       )
     }

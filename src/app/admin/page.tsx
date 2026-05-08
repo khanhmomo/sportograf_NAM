@@ -64,7 +64,9 @@ export default function AdminDashboard() {
   const [isUpdating, setIsUpdating] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<'events'>('events')
+  const [activeTab, setActiveTab] = useState<'events' | 'registrations' | 'travel-forms'>('events')
+  const [overviewEventId, setOverviewEventId] = useState<string | null>(null)
+  const [lastUpdated, setLastUpdated] = useState<Date>(new Date())
 
   useEffect(() => {
     // Check authentication first
@@ -85,12 +87,21 @@ export default function AdminDashboard() {
   }, [router])
 
   useEffect(() => {
-    fetchDashboardData()
+    fetchDashboardData(true)
+
+    // Set up real-time polling for dashboard data
+    const interval = setInterval(() => {
+      fetchDashboardData(false)
+    }, 3000) // Poll every 3 seconds for more responsive updates
+
+    return () => clearInterval(interval)
   }, [])
 
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = async (isInitialLoad = false) => {
     try {
-      setLoading(true)
+      if (isInitialLoad) {
+        setLoading(true)
+      }
       
       // Fetch events
       const eventsResponse = await fetch('/api/events')
@@ -107,6 +118,7 @@ export default function AdminDashboard() {
       }
 
       setLoading(false)
+      setLastUpdated(new Date())
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error)
       setLoading(false)
@@ -142,6 +154,25 @@ export default function AdminDashboard() {
       }
     } catch (error) {
       console.error('Failed to fetch event registrations:', error)
+    }
+  }
+
+  const deleteRegistration = async (registrationId: string) => {
+    if (!confirm('Are you sure you want to delete this registration?')) return
+
+    try {
+      const response = await fetch(`/api/admin/registrations/${registrationId}`, {
+        method: 'DELETE',
+      })
+
+      if (response.ok) {
+        // Refresh the registrations list
+        if (selectedEventId) {
+          fetchEventRegistrations(selectedEventId)
+        }
+      }
+    } catch (error) {
+      console.error('Failed to delete registration:', error)
     }
   }
 
@@ -580,6 +611,13 @@ export default function AdminDashboard() {
                             </div>
                           </div>
                         </div>
+                        <button
+                          onClick={() => deleteRegistration(registration._id)}
+                          className="flex-shrink-0 p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Delete"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
                       </div>
                     </div>
                   ))}

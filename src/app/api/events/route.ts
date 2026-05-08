@@ -15,7 +15,7 @@ export async function GET() {
         
         const [registrationCount, travelFormCount] = await Promise.all([
           registrationsCollection.countDocuments({ eventId: event._id }),
-          travelFormsCollection.countDocuments({ eventId: event._id })
+          travelFormsCollection.countDocuments({ eventId: event._id.toString() })
         ])
         
         return {

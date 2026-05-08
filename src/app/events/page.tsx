@@ -416,24 +416,24 @@ export default function EventsPage() {
 
         {/* Confirmation Modal */}
         {showConfirmation && (
-          <div className="fixed inset-0 bg-black/20 backdrop-blur-md flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[95vh] overflow-hidden flex flex-col">
-              <div className="flex justify-between items-center p-6 border-b border-gray-200">
-                <h3 className="text-xl font-semibold text-gray-900">Confirm Event Requests</h3>
+          <div className="fixed inset-0 bg-black/20 backdrop-blur-md flex items-center justify-center p-2 md:p-4 z-50">
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[95vh] md:max-h-[80vh] overflow-hidden flex flex-col">
+              <div className="flex justify-between items-center p-4 md:p-6 border-b border-gray-200">
+                <h3 className="text-base md:text-xl font-semibold text-gray-900 truncate pr-4">Confirm Event Requests</h3>
                 <button
                   onClick={() => setShowConfirmation(false)}
-                  className="text-gray-500 hover:text-gray-700 text-2xl p-2"
+                  className="text-gray-500 hover:text-gray-700 text-2xl md:text-3xl p-2 flex-shrink-0"
                 >
                   ×
                 </button>
               </div>
               
-              <div className="overflow-y-auto p-6 flex-1">
-                <div className="space-y-6">
+              <div className="overflow-y-auto p-4 md:p-6 flex-1">
+                <div className="space-y-4 md:space-y-6">
                   {/* User Information Summary */}
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <h4 className="text-sm font-semibold text-gray-700 mb-3">Your Information</h4>
-                    <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div className="bg-gray-50 rounded-lg p-3 md:p-4">
+                    <h4 className="text-sm font-semibold text-gray-700 mb-2 md:mb-3">Your Information</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-3 text-sm">
                       <div>
                         <span className="text-gray-500">Name:</span>
                         <span className="ml-2 font-medium text-gray-900">{userInfo.name}</span>
@@ -444,7 +444,7 @@ export default function EventsPage() {
                       </div>
                       <div>
                         <span className="text-gray-500">Email:</span>
-                        <span className="ml-2 font-medium text-gray-900">{userInfo.email}</span>
+                        <span className="ml-2 font-medium text-gray-900 break-all">{userInfo.email}</span>
                       </div>
                       <div>
                         <span className="text-gray-500">Phone:</span>
@@ -455,7 +455,7 @@ export default function EventsPage() {
 
                   {/* Selected Events */}
                   <div>
-                    <h4 className="text-sm font-semibold text-gray-700 mb-3">
+                    <h4 className="text-sm font-semibold text-gray-700 mb-2 md:mb-3">
                       Selected Events ({selectedEvents.size})
                     </h4>
                     <div className="space-y-2">
@@ -465,8 +465,8 @@ export default function EventsPage() {
                         return (
                           <div key={eventId} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                             <div className="flex-1 min-w-0">
-                              <div className="font-medium text-gray-900">{event.title}</div>
-                              <div className="text-xs text-gray-600 mt-1 flex items-center gap-3">
+                              <div className="font-medium text-gray-900 text-sm md:text-base">{event.title}</div>
+                              <div className="text-xs text-gray-600 mt-1 flex flex-wrap items-center gap-2 md:gap-3">
                                 <div className="flex items-center">
                                   <Calendar className="h-3 w-3 mr-1" />
                                   {format(new Date(event.startDate), 'MMM d, yyyy')}
@@ -487,8 +487,8 @@ export default function EventsPage() {
                   </div>
 
                   {/* Warning */}
-                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                    <p className="text-sm text-yellow-800">
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 md:p-4">
+                    <p className="text-xs md:text-sm text-yellow-800">
                       <strong>Important:</strong> Your requests will be submitted to the admin for approval. 
                       Once approved, you will be notified and can complete your travel arrangements.
                     </p>
@@ -496,18 +496,18 @@ export default function EventsPage() {
                 </div>
               </div>
               
-              <div className="border-t border-gray-200 p-4 bg-gray-50">
-                <div className="flex justify-end space-x-3">
+              <div className="border-t border-gray-200 p-3 md:p-4 bg-gray-50">
+                <div className="flex flex-col sm:flex-row sm:justify-end sm:space-x-3 gap-3">
                   <button
                     onClick={() => setShowConfirmation(false)}
-                    className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 text-sm font-medium"
+                    className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 text-sm md:text-sm font-medium w-full sm:w-auto"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleSubmitRequests}
                     disabled={isSubmitting}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-sm font-medium w-full sm:w-auto"
                   >
                     {isSubmitting ? 'Submitting...' : 'Confirm Request'}
                   </button>

@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Plane, Calendar, MapPin, CheckCircle, Car, Train } from 'lucide-react'
+import { useToast } from '@/hooks/useToast'
 
 const travelFormSchema = z.object({
   eventId: z.string().min(1, 'Please select an event'),
@@ -62,6 +63,7 @@ export default function TravelPage() {
   const [events, setEvents] = useState<Event[]>([])
   const [selectedTravelMethod, setSelectedTravelMethod] = useState<string>('')
   const [activeFlightTab, setActiveFlightTab] = useState<'departure' | 'arrival'>('departure')
+  const { showToast } = useToast()
 
   const {
     register,
@@ -119,6 +121,8 @@ export default function TravelPage() {
   const onSubmit = async (data: TravelFormData) => {
     setIsSubmitting(true)
     try {
+      console.log('Submitting travel form:', data)
+      
       const response = await fetch('/api/travel', {
         method: 'POST',
         headers: {
@@ -127,16 +131,40 @@ export default function TravelPage() {
         body: JSON.stringify(data),
       })
 
+      console.log('Response status:', response.status)
+
       if (response.ok) {
         setIsSubmitted(true)
         reset()
+        showToast({
+          title: 'Travel Form Submitted!',
+          message: 'Your travel information has been received and will be processed.',
+          type: 'success'
+        })
       } else {
-        const error = await response.json()
-        alert(error.message || 'Failed to submit travel form')
+        let errorMessage = 'Failed to submit travel form'
+        try {
+          const error = await response.json()
+          console.error('Travel form submission error:', error)
+          console.error('Error status:', response.status)
+          errorMessage = error.error || error.message || errorMessage
+        } catch (e) {
+          console.error('Failed to parse error response:', e)
+          errorMessage = `Failed to submit travel form (Status: ${response.status})`
+        }
+        showToast({
+          title: 'Submission Failed',
+          message: errorMessage,
+          type: 'error'
+        })
       }
     } catch (error) {
       console.error('Submission failed:', error)
-      alert('Failed to submit travel form')
+      showToast({
+        title: 'Submission Failed',
+        message: 'Failed to submit travel form. Please check your connection and try again.',
+        type: 'error'
+      })
     } finally {
       setIsSubmitting(false)
     }
