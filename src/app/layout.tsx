@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Sportograf Digital Forms - Event Management",
+  title: "Sportograf Digital Forms",
   description: "Choose events and submit travel information for Sportograf events. Manage registrations, travel forms, and event logistics in one platform.",
   keywords: "Sportograf, events, travel, registration, sports management",
   authors: [{ name: "Sportograf" }],
@@ -26,14 +26,14 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://sportograf-nam.vercel.app'),
+  metadataBase: new URL('https://sgforms.vercel.app'),
   alternates: {
     canonical: '/',
   },
   openGraph: {
-    title: "Sportograf Digital Forms - Event Management",
+    title: "Sportograf Digital Forms",
     description: "Choose events and submit travel information for Sportograf events. Manage registrations, travel forms, and event logistics in one platform.",
-    url: 'https://sportograf-nam.vercel.app',
+    url: 'https://sgforms.vercel.app',
     siteName: "Sportograf Digital Forms",
     images: [
       {
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Sportograf Digital Forms - Event Management",
+    title: "Sportograf Digital Forms",
     description: "Choose events and submit travel information for Sportograf events",
     images: ['https://www.sportograf.com/images/sg-logo-new-no-text.png'],
     creator: '@sportograf',
