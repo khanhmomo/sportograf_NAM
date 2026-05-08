@@ -497,6 +497,7 @@ export default function TravelPage() {
                                       type="date"
                                       {...register('departureFromEventDepartureDate')}
                                       className="w-full px-2 py-1 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                      style={{ color: '#111827' }}
                                     />
                                   </div>
                                   <div>
@@ -505,6 +506,7 @@ export default function TravelPage() {
                                       type="time"
                                       {...register('departureFromEventDepartureTime')}
                                       className="w-full px-2 py-1 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                      style={{ color: '#111827' }}
                                     />
                                   </div>
                                 </div>
@@ -516,6 +518,7 @@ export default function TravelPage() {
                                       type="date"
                                       {...register('departureFromEventArrivalDate')}
                                       className="w-full px-2 py-1 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                      style={{ color: '#111827' }}
                                     />
                                   </div>
                                   <div>
@@ -524,6 +527,7 @@ export default function TravelPage() {
                                       type="time"
                                       {...register('departureFromEventArrivalTime')}
                                       className="w-full px-2 py-1 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                      style={{ color: '#111827' }}
                                     />
                                   </div>
                                 </div>
