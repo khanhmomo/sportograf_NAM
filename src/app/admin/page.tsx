@@ -288,6 +288,52 @@ export default function AdminDashboard() {
     setEditSuggestedFlights(newFlights)
   }
 
+  const handleEditRowPaste = async (e: React.ClipboardEvent, index: number) => {
+    const items = e.clipboardData?.items
+    if (items) {
+      for (const item of items) {
+        if (item.type.startsWith('image/')) {
+          const file = item.getAsFile()
+          if (file) {
+            e.preventDefault()
+            await uploadImageToEditFlight(file, index)
+            break
+          }
+        }
+      }
+    }
+  }
+
+  const uploadImageToEditFlight = async (file: File, index: number) => {
+    try {
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onloadend = async () => {
+        const base64data = reader.result as string
+        
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            file: base64data,
+            folder: 'flight-screenshots',
+          }),
+        })
+
+        if (response.ok) {
+          const data = await response.json()
+          updateEditSuggestedFlight(index, 'screenshot', data.url)
+        } else {
+          console.error('Upload failed')
+        }
+      }
+    } catch (error) {
+      console.error('Upload error:', error)
+    }
+  }
+
   const updateEvent = async () => {
     if (!editingEventId) return
 
@@ -783,7 +829,7 @@ export default function AdminDashboard() {
                           </thead>
                           <tbody className="bg-white divide-y divide-gray-200">
                             {editSuggestedFlights.map((flight, index) => (
-                              <tr key={index}>
+                              <tr key={index} onPaste={(e) => handleEditRowPaste(e, index)}>
                                 <td className="px-2 py-1">
                                   <input
                                     type="text"

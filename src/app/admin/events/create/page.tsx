@@ -51,6 +51,52 @@ export default function CreateEventPage() {
     setSuggestedFlights(newFlights.length > 0 ? newFlights : [{ from: '', to: '', price: '', budgetAllow: '', link: '' }])
   }
 
+  const handleRowPaste = async (e: React.ClipboardEvent, index: number) => {
+    const items = e.clipboardData?.items
+    if (items) {
+      for (const item of items) {
+        if (item.type.startsWith('image/')) {
+          const file = item.getAsFile()
+          if (file) {
+            e.preventDefault()
+            await uploadImageToFlight(file, index)
+            break
+          }
+        }
+      }
+    }
+  }
+
+  const uploadImageToFlight = async (file: File, index: number) => {
+    try {
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onloadend = async () => {
+        const base64data = reader.result as string
+        
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            file: base64data,
+            folder: 'flight-screenshots',
+          }),
+        })
+
+        if (response.ok) {
+          const data = await response.json()
+          updateSuggestedFlight(index, 'screenshot', data.url)
+        } else {
+          console.error('Upload failed')
+        }
+      }
+    } catch (error) {
+      console.error('Upload error:', error)
+    }
+  }
+
   const updateSuggestedFlight = (index: number, field: keyof SuggestedFlight, value: string) => {
     const newFlights = [...suggestedFlights]
     newFlights[index][field] = value
@@ -197,7 +243,7 @@ export default function CreateEventPage() {
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
                         {suggestedFlights.map((flight, index) => (
-                          <tr key={index}>
+                          <tr key={index} onPaste={(e) => handleRowPaste(e, index)}>
                             <td className="px-3 py-2">
                               <input
                                 type="text"
