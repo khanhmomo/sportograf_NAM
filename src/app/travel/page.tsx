@@ -374,27 +374,27 @@ export default function TravelPage() {
                     <Plane className="h-4 w-4 mr-2" />
                     Suggested Flights for This Event
                   </h3>
-                  <div className="overflow-x-auto">
-                    <table className="min-w-full text-xs sm:text-sm">
+                  <div className="overflow-x-auto -mx-3 sm:mx-0 px-3 sm:px-0">
+                    <table className="min-w-full text-[10px] sm:text-xs">
                       <thead className="bg-blue-100">
                         <tr>
-                          <th className="px-3 py-2 text-left text-xs font-medium text-blue-800 uppercase">From</th>
-                          <th className="px-3 py-2 text-left text-xs font-medium text-blue-800 uppercase">To</th>
-                          <th className="px-3 py-2 text-left text-xs font-medium text-blue-800 uppercase">Price (€)</th>
-                          <th className="px-3 py-2 text-left text-xs font-medium text-blue-800 uppercase">Budget Allow (€)</th>
-                          <th className="px-3 py-2 text-left text-xs font-medium text-blue-800 uppercase">Screenshot</th>
-                          <th className="px-3 py-2 text-left text-xs font-medium text-blue-800 uppercase">Action</th>
+                          <th className="px-2 py-1 sm:px-3 sm:py-2 text-left text-[10px] sm:text-xs font-medium text-blue-800 uppercase">From</th>
+                          <th className="px-2 py-1 sm:px-3 sm:py-2 text-left text-[10px] sm:text-xs font-medium text-blue-800 uppercase">To</th>
+                          <th className="px-2 py-1 sm:px-3 sm:py-2 text-left text-[10px] sm:text-xs font-medium text-blue-800 uppercase">Price</th>
+                          <th className="px-2 py-1 sm:px-3 sm:py-2 text-left text-[10px] sm:text-xs font-medium text-blue-800 uppercase">Budget</th>
+                          <th className="px-2 py-1 sm:px-3 sm:py-2 text-left text-[10px] sm:text-xs font-medium text-blue-800 uppercase">Screenshot</th>
+                          <th className="px-2 py-1 sm:px-3 sm:py-2 text-left text-[10px] sm:text-xs font-medium text-blue-800 uppercase">Action</th>
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-blue-200">
                         {selectedEventSuggestedFlights.map((flight, index) => (
                           <Fragment key={index}>
                             <tr>
-                              <td className="px-3 py-2 text-gray-900">{flight.from}</td>
-                              <td className="px-3 py-2 text-gray-900">{flight.to}</td>
-                              <td className="px-3 py-2 text-gray-900">{flight.price}</td>
-                              <td className="px-3 py-2 text-gray-900">{flight.budgetAllow}</td>
-                              <td className="px-3 py-2">
+                              <td className="px-2 py-1 sm:px-3 sm:py-2 text-gray-900">{flight.from}</td>
+                              <td className="px-2 py-1 sm:px-3 sm:py-2 text-gray-900">{flight.to}</td>
+                              <td className="px-2 py-1 sm:px-3 sm:py-2 text-gray-900">{flight.price}</td>
+                              <td className="px-2 py-1 sm:px-3 sm:py-2 text-gray-900">{flight.budgetAllow}</td>
+                              <td className="px-2 py-1 sm:px-3 sm:py-2">
                                 {flight.screenshot ? (
                                   <button
                                     type="button"
@@ -404,47 +404,47 @@ export default function TravelPage() {
                                     <img
                                       src={flight.screenshot}
                                       alt="Flight screenshot"
-                                      className="w-20 h-16 object-cover rounded border border-gray-300 hover:opacity-80 transition-opacity"
+                                      className="w-16 h-12 sm:w-20 sm:h-16 object-cover rounded border border-gray-300 hover:opacity-80 transition-opacity"
                                     />
                                   </button>
                                 ) : (
-                                  <span className="text-gray-400 text-xs">No screenshot</span>
+                                  <span className="text-gray-400 text-[10px]">No screenshot</span>
                                 )}
                               </td>
-                              <td className="px-3 py-2">
+                              <td className="px-2 py-1 sm:px-3 sm:py-2">
                                 {flight.link ? (
                                   <a
                                     href={flight.link}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex items-center px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition-colors"
+                                    className="inline-flex items-center px-2 py-1 sm:px-3 sm:py-1 bg-blue-600 text-white text-[10px] sm:text-xs rounded hover:bg-blue-700 transition-colors"
                                   >
                                     Show Flight
                                   </a>
                                 ) : (
-                                  <span className="text-gray-400 text-xs">No link</span>
+                                  <span className="text-gray-400 text-[10px]">No link</span>
                                 )}
                               </td>
                             </tr>
                             {expandedScreenshotIndex === index && flight.screenshot && (
                               <tr>
-                                <td colSpan={6} className="px-3 py-4 bg-blue-50">
+                                <td colSpan={6} className="px-2 py-2 sm:px-3 sm:py-4 bg-blue-50">
                                   <div className="flex flex-col items-center">
                                     <div className="relative inline-block">
                                       <button
                                         type="button"
                                         onClick={() => setExpandedScreenshotIndex(null)}
-                                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                                        className="absolute top-1 right-1 sm:top-2 sm:right-2 bg-red-500 text-white rounded-full p-0.5 sm:p-1 hover:bg-red-600 transition-colors"
                                       >
-                                        <X className="h-4 w-4" />
+                                        <X className="h-3 w-3 sm:h-4 sm:w-4" />
                                       </button>
                                       <img
                                         src={flight.screenshot}
                                         alt="Flight screenshot full size"
-                                        className="max-w-full max-h-64 sm:max-h-96 object-contain rounded border border-gray-300"
+                                        className="max-w-full max-h-48 sm:max-h-64 lg:max-h-96 object-contain rounded border border-gray-300"
                                       />
                                     </div>
-                                    <p className="text-xs text-gray-600 mt-2">Flight: {flight.from} → {flight.to}</p>
+                                    <p className="text-[10px] sm:text-xs text-gray-600 mt-1 sm:mt-2">Flight: {flight.from} → {flight.to}</p>
                                   </div>
                                 </td>
                               </tr>
