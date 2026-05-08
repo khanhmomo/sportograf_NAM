@@ -52,44 +52,6 @@ export default function Home() {
             </p>
           </Link>
         </div>
-
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          <Link 
-            href="/events"
-            className="bg-white rounded-lg shadow-lg p-8 hover:shadow-xl transition-shadow duration-300"
-          >
-            <div className="flex items-center mb-4">
-              <Calendar className="h-8 w-8 text-blue-600 mr-3" />
-              <h2 className="text-2xl font-semibold text-gray-900">
-                Browse Events
-              </h2>
-            </div>
-            <p className="text-gray-600 mb-4">
-              View available events and register for the ones you want to attend
-            </p>
-            <div className="text-blue-600 font-medium hover:text-blue-700">
-              Explore Events →
-            </div>
-          </Link>
-
-          <Link 
-            href="/travel"
-            className="bg-white rounded-lg shadow-lg p-8 hover:shadow-xl transition-shadow duration-300"
-          >
-            <div className="flex items-center mb-4">
-              <Plane className="h-8 w-8 text-green-600 mr-3" />
-              <h2 className="text-2xl font-semibold text-gray-900">
-                Travel Form
-              </h2>
-            </div>
-            <p className="text-gray-600 mb-4">
-              Submit your travel information for upcoming events
-            </p>
-            <div className="text-green-600 font-medium hover:text-green-700">
-              Submit Travel Info →
-            </div>
-          </Link>
-        </div>
       </div>
     </div>
   )
