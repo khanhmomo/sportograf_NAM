@@ -10,12 +10,21 @@ export async function PATCH(
     const { id } = await params
     const eventsCollection = await getEventsCollection()
     const body = await request.json()
-    
+
+    // Convert date strings to local time to avoid timezone issues
+    const updateData: any = { ...body }
+    if (body.startDate) {
+      updateData.startDate = new Date(body.startDate + 'T00:00:00')
+    }
+    if (body.endDate) {
+      updateData.endDate = new Date(body.endDate + 'T00:00:00')
+    }
+
     const result = await eventsCollection.updateOne(
       { _id: new ObjectId(id) },
-      { 
-        $set: { 
-          ...body,
+      {
+        $set: {
+          ...updateData,
           updatedAt: new Date()
         }
       }
@@ -28,9 +37,9 @@ export async function PATCH(
       )
     }
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       id: id,
-      message: 'Event updated successfully' 
+      message: 'Event updated successfully'
     })
   } catch (error) {
     console.error('Failed to update event:', error)

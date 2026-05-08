@@ -225,7 +225,7 @@ export default function TravelPage() {
         <div className="max-w-7xl mx-auto">
           <div className="mb-6 sm:mb-8">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Travel Information</h1>
-            <p className="text-sm sm:text-base text-gray-600">Submit your travel details for Sportograf North America events</p>
+            <p className="text-sm sm:text-base text-gray-600">Submit your travel details for Sportograf South America events</p>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-6">

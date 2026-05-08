@@ -80,6 +80,16 @@ export default function AdminDashboard() {
   const [activeFlightIndex, setActiveFlightIndex] = useState<number | null>(null)
   const [isUpdating, setIsUpdating] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
+  const [selectedRegion, setSelectedRegion] = useState<'na' | 'sa' | 'asia'>(() => {
+    if (typeof document !== 'undefined') {
+      const savedRegion = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('admin_region='))
+        ?.split('=')[1]
+      return (savedRegion as 'na' | 'sa' | 'asia') || 'na'
+    }
+    return 'na'
+  })
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<'events' | 'registrations' | 'travel-forms'>('events')
   const [overviewEventId, setOverviewEventId] = useState<string | null>(null)
@@ -381,10 +391,16 @@ export default function AdminDashboard() {
 
   const filteredEvents = events
     .filter(event =>
-      event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (event.location && event.location.toLowerCase().includes(searchTerm.toLowerCase()))
+      (event.region === selectedRegion || (!event.region && selectedRegion === 'na')) &&
+      (event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (event.location && event.location.toLowerCase().includes(searchTerm.toLowerCase())))
     )
     .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
+
+  const handleRegionChange = (region: 'na' | 'sa' | 'asia') => {
+    setSelectedRegion(region)
+    document.cookie = `admin_region=${region}; path=/; max-age=31536000`
+  }
 
   if (loading) {
     return (
@@ -451,6 +467,15 @@ export default function AdminDashboard() {
                     className="w-full sm:w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-400 text-sm md:text-base"
                   />
                 </div>
+                <select
+                  value={selectedRegion}
+                  onChange={(e) => handleRegionChange(e.target.value as 'na' | 'sa' | 'asia')}
+                  className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 text-sm md:text-base"
+                >
+                  <option value="na">North America</option>
+                  <option value="sa">South America</option>
+                  <option value="asia">Asia</option>
+                </select>
                 <Link
                   href="/admin/events/create"
                   className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center text-sm md:text-base"
@@ -475,7 +500,6 @@ export default function AdminDashboard() {
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Region</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Event</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
@@ -488,17 +512,6 @@ export default function AdminDashboard() {
                     <tbody className="bg-white divide-y divide-gray-200">
                       {filteredEvents.map((event) => (
                         <tr key={event.id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                              event.region === 'na' 
-                                ? 'bg-blue-100 text-blue-800' 
-                                : event.region === 'sa'
-                                ? 'bg-green-100 text-green-800'
-                                : 'bg-red-100 text-red-800'
-                            }`}>
-                              {event.region?.toUpperCase() || 'NA'}
-                            </span>
-                          </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm font-medium text-gray-900">{event.title}</div>
                           </td>
@@ -542,13 +555,15 @@ export default function AdminDashboard() {
                             >
                               <Plane className="h-4 w-4" />
                             </button>
-                            <button
-                              onClick={() => fetchEventRegistrations(event.id)}
-                              className="text-purple-600 hover:text-purple-900"
-                              title="Requests"
-                            >
-                              <Users className="h-4 w-4" />
-                            </button>
+                            {selectedRegion === 'na' && (
+                              <button
+                                onClick={() => fetchEventRegistrations(event.id)}
+                                className="text-purple-600 hover:text-purple-900"
+                                title="Requests"
+                              >
+                                <Users className="h-4 w-4" />
+                              </button>
+                            )}
                             <button
                               onClick={() => openEditModal(event.id)}
                               className="text-blue-600 hover:text-blue-900"
@@ -619,15 +634,17 @@ export default function AdminDashboard() {
                             className="flex items-center px-2 py-1.5 text-xs font-medium text-green-700 bg-green-50 rounded hover:bg-green-100 transition-colors"
                           >
                             <Plane className="h-3.5 w-3.5 mr-1" />
-                            Travel
+                            Travel Forms
                           </button>
-                          <button
-                            onClick={() => fetchEventRegistrations(event.id)}
-                            className="flex items-center px-2 py-1.5 text-xs font-medium text-purple-700 bg-purple-50 rounded hover:bg-purple-100 transition-colors"
-                          >
-                            <Users className="h-3.5 w-3.5 mr-1" />
-                            Requests
-                          </button>
+                          {selectedRegion === 'na' && (
+                            <button
+                              onClick={() => fetchEventRegistrations(event.id)}
+                              className="flex items-center px-2 py-1.5 text-xs font-medium text-purple-700 bg-purple-50 rounded hover:bg-purple-100 transition-colors"
+                            >
+                              <Users className="h-3.5 w-3.5 mr-1" />
+                              Requests
+                            </button>
+                          )}
                         </div>
                         <div className="flex items-center space-x-1">
                           <button

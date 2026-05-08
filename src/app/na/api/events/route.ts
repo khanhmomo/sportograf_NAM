@@ -5,7 +5,7 @@ import { Event } from '@/models/Event'
 export async function GET() {
   try {
     const eventsCollection = await getEventsCollection()
-    const events = await eventsCollection.find({}).toArray()
+    const events = await eventsCollection.find({ region: 'na' }).toArray()
     
     // Add registration and travel form counts to each event
     const eventsWithCounts = await Promise.all(
@@ -48,8 +48,8 @@ export async function POST(request: NextRequest) {
       title: body.title,
       description: undefined,
       location: body.location || undefined,
-      startDate: new Date(body.startDate),
-      endDate: body.endDate ? new Date(body.endDate) : undefined,
+      startDate: new Date(body.startDate + 'T00:00:00'),
+      endDate: body.endDate ? new Date(body.endDate + 'T00:00:00') : undefined,
       maxCapacity: undefined,
       isActive: true,
       suggestedFlights: body.suggestedFlights || undefined,
