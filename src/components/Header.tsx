@@ -13,7 +13,7 @@ export default function Header() {
               alt="Sportograf Logo" 
               className="h-6 md:h-8 w-auto"
             />
-            <span className="text-base md:text-xl font-bold text-gray-900">Sportograf</span>
+            <span className="text-base md:text-xl font-bold text-gray-900">Sportograf Digital Forms</span>
           </Link>
         </div>
       </div>
