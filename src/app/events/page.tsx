@@ -37,6 +37,7 @@ export default function EventsPage() {
     phoneNumber: ''
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showConfirmation, setShowConfirmation] = useState(false)
   const { showToast } = useToast()
 
   useEffect(() => {
@@ -81,7 +82,7 @@ export default function EventsPage() {
   }
 
   
-  const handleSubmitRequests = async () => {
+  const handleShowConfirmation = () => {
     // Validate user info
     if (!userInfo.name || !userInfo.email || !userInfo.phoneNumber) {
       showToast({
@@ -98,6 +99,17 @@ export default function EventsPage() {
         message: 'Please select at least one event',
         type: 'warning'
       })
+      return
+    }
+
+    setShowConfirmation(true)
+  }
+
+  const handleSubmitRequests = async () => {
+    setShowConfirmation(false)
+    
+    if (selectedEvents.size === 0) {
+      setIsSubmitting(false)
       return
     }
 
@@ -389,7 +401,7 @@ export default function EventsPage() {
               }
             </div>
             <button
-              onClick={handleSubmitRequests}
+              onClick={handleShowConfirmation}
               disabled={isSubmitting || selectedEvents.size === 0}
               className={`px-6 py-3 rounded-lg font-medium transition-colors ${
                 isSubmitting || selectedEvents.size === 0
@@ -399,6 +411,109 @@ export default function EventsPage() {
             >
               {isSubmitting ? 'Submitting...' : `Request ${selectedEvents.size} Event${selectedEvents.size !== 1 ? 's' : ''}`}
             </button>
+          </div>
+        )}
+
+        {/* Confirmation Modal */}
+        {showConfirmation && (
+          <div className="fixed inset-0 bg-black/20 backdrop-blur-md flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[95vh] overflow-hidden flex flex-col">
+              <div className="flex justify-between items-center p-6 border-b border-gray-200">
+                <h3 className="text-xl font-semibold text-gray-900">Confirm Event Requests</h3>
+                <button
+                  onClick={() => setShowConfirmation(false)}
+                  className="text-gray-500 hover:text-gray-700 text-2xl p-2"
+                >
+                  ×
+                </button>
+              </div>
+              
+              <div className="overflow-y-auto p-6 flex-1">
+                <div className="space-y-6">
+                  {/* User Information Summary */}
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <h4 className="text-sm font-semibold text-gray-700 mb-3">Your Information</h4>
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div>
+                        <span className="text-gray-500">Name:</span>
+                        <span className="ml-2 font-medium text-gray-900">{userInfo.name}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-500">Acronym:</span>
+                        <span className="ml-2 font-medium text-gray-900">{userInfo.acronym || 'N/A'}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-500">Email:</span>
+                        <span className="ml-2 font-medium text-gray-900">{userInfo.email}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-500">Phone:</span>
+                        <span className="ml-2 font-medium text-gray-900">{userInfo.phoneNumber}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Selected Events */}
+                  <div>
+                    <h4 className="text-sm font-semibold text-gray-700 mb-3">
+                      Selected Events ({selectedEvents.size})
+                    </h4>
+                    <div className="space-y-2">
+                      {Array.from(selectedEvents).map(eventId => {
+                        const event = events.find(e => e.id === eventId)
+                        if (!event) return null
+                        return (
+                          <div key={eventId} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div className="flex-1 min-w-0">
+                              <div className="font-medium text-gray-900">{event.title}</div>
+                              <div className="text-xs text-gray-600 mt-1 flex items-center gap-3">
+                                <div className="flex items-center">
+                                  <Calendar className="h-3 w-3 mr-1" />
+                                  {format(new Date(event.startDate), 'MMM d, yyyy')}
+                                </div>
+                                {event.location && (
+                                  <div className="flex items-center">
+                                    <MapPin className="h-3 w-3 mr-1" />
+                                    {event.location}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 ml-3" />
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Warning */}
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <p className="text-sm text-yellow-800">
+                      <strong>Important:</strong> Your requests will be submitted to the admin for approval. 
+                      Once approved, you will be notified and can complete your travel arrangements.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="border-t border-gray-200 p-4 bg-gray-50">
+                <div className="flex justify-end space-x-3">
+                  <button
+                    onClick={() => setShowConfirmation(false)}
+                    className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 text-sm font-medium"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSubmitRequests}
+                    disabled={isSubmitting}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+                  >
+                    {isSubmitting ? 'Submitting...' : 'Confirm Request'}
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>

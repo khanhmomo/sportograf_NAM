@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getEventsCollection, getRegistrationsCollection } from '@/lib/mongodb'
+import { getEventsCollection, getRegistrationsCollection, getTravelFormsCollection } from '@/lib/mongodb'
 import { Event } from '@/models/Event'
 
 export async function GET() {
@@ -7,19 +7,23 @@ export async function GET() {
     const eventsCollection = await getEventsCollection()
     const events = await eventsCollection.find({}).toArray()
     
-    // Add registration counts to each event
+    // Add registration and travel form counts to each event
     const eventsWithCounts = await Promise.all(
       events.map(async (event: any) => {
         const registrationsCollection = await getRegistrationsCollection()
-        const registrationCount = await registrationsCollection.countDocuments({ 
-          eventId: event._id 
-        })
+        const travelFormsCollection = await getTravelFormsCollection()
+        
+        const [registrationCount, travelFormCount] = await Promise.all([
+          registrationsCollection.countDocuments({ eventId: event._id }),
+          travelFormsCollection.countDocuments({ eventId: event._id })
+        ])
         
         return {
           ...event,
           id: event._id?.toString(),
           _count: {
-            eventRegistrations: registrationCount
+            eventRegistrations: registrationCount,
+            travelForms: travelFormCount
           }
         }
       })
