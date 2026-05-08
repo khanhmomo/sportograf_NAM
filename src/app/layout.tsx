@@ -37,10 +37,10 @@ export const metadata: Metadata = {
     siteName: "Sportograf North America",
     images: [
       {
-        url: '/og-image.svg',
-        width: 1200,
-        height: 630,
-        alt: 'Sportograf North America Event Management',
+        url: 'https://www.sportograf.com/images/sg-logo-new-no-text.png',
+        width: 400,
+        height: 400,
+        alt: 'Sportograf Logo',
       },
     ],
     locale: 'en_US',
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: "Sportograf North America - Event Management",
     description: "Choose events and submit travel information for Sportograf North America events",
-    images: ['/og-image.svg'],
+    images: ['https://www.sportograf.com/images/sg-logo-new-no-text.png'],
     creator: '@sportograf',
   },
   icons: {
