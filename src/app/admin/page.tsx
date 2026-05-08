@@ -30,6 +30,7 @@ interface Event {
   endDate?: Date
   isActive: boolean
   suggestedFlights?: SuggestedFlight[]
+  region?: 'na' | 'sa' | 'asia'
   _count?: {
     eventRegistrations: number
     travelForms: number
@@ -70,7 +71,8 @@ export default function AdminDashboard() {
     title: '',
     location: '',
     startDate: '',
-    endDate: ''
+    endDate: '',
+    region: 'na' as 'na' | 'sa' | 'asia'
   })
   const [editSuggestedFlights, setEditSuggestedFlights] = useState<SuggestedFlight[]>([
     { from: '', to: '', price: '', budgetAllow: '', link: '' }
@@ -253,7 +255,8 @@ export default function AdminDashboard() {
         title: event.title,
         location: event.location || '',
         startDate: format(new Date(event.startDate), 'yyyy-MM-dd'),
-        endDate: event.endDate ? format(new Date(event.endDate), 'yyyy-MM-dd') : ''
+        endDate: event.endDate ? format(new Date(event.endDate), 'yyyy-MM-dd') : '',
+        region: event.region || 'na'
       })
       setEditSuggestedFlights(event.suggestedFlights && event.suggestedFlights.length > 0 
         ? event.suggestedFlights 
@@ -266,7 +269,7 @@ export default function AdminDashboard() {
   const closeEditModal = () => {
     setIsEditingEvent(false)
     setEditingEventId(null)
-    setEditForm({ title: '', location: '', startDate: '', endDate: '' })
+    setEditForm({ title: '', location: '', startDate: '', endDate: '', region: 'na' })
     setEditSuggestedFlights([{ from: '', to: '', price: '', budgetAllow: '', link: '' }])
   }
 
@@ -472,6 +475,7 @@ export default function AdminDashboard() {
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Region</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Event</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
@@ -484,6 +488,17 @@ export default function AdminDashboard() {
                     <tbody className="bg-white divide-y divide-gray-200">
                       {filteredEvents.map((event) => (
                         <tr key={event.id} className="hover:bg-gray-50">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                              event.region === 'na' 
+                                ? 'bg-blue-100 text-blue-800' 
+                                : event.region === 'sa'
+                                ? 'bg-green-100 text-green-800'
+                                : 'bg-red-100 text-red-800'
+                            }`}>
+                              {event.region?.toUpperCase() || 'NA'}
+                            </span>
+                          </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm font-medium text-gray-900">{event.title}</div>
                           </td>
@@ -804,6 +819,21 @@ export default function AdminDashboard() {
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 text-sm md:text-base"
                       />
                     </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Region
+                    </label>
+                    <select
+                      value={editForm.region}
+                      onChange={(e) => handleEditFormChange('region', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 text-sm md:text-base"
+                    >
+                      <option value="na">North America</option>
+                      <option value="sa">South America</option>
+                      <option value="asia">Asia</option>
+                    </select>
                   </div>
 
                   {/* Suggested Flights */}

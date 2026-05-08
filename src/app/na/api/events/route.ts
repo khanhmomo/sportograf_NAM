@@ -52,7 +52,8 @@ export async function POST(request: NextRequest) {
       endDate: body.endDate ? new Date(body.endDate) : undefined,
       maxCapacity: undefined,
       isActive: true,
-      suggestedFlights: body.suggestedFlights || undefined
+      suggestedFlights: body.suggestedFlights || undefined,
+      region: body.region || 'na'
     }
     
     const result = await eventsCollection.insertOne({

@@ -19,6 +19,7 @@ export interface Event {
   maxCapacity?: number
   isActive: boolean
   suggestedFlights?: SuggestedFlight[]
+  region: 'na' | 'sa' | 'asia'
   createdAt: Date
   updatedAt: Date
 }

@@ -14,6 +14,7 @@ const eventFormSchema = z.object({
   location: z.string().optional(),
   startDate: z.string().min(1, 'Start date is required'),
   endDate: z.string().optional(),
+  region: z.enum(['na', 'sa', 'asia']),
 })
 
 type EventFormData = z.infer<typeof eventFormSchema>
@@ -41,6 +42,9 @@ export default function CreateEventPage() {
     formState: { errors },
   } = useForm<EventFormData>({
     resolver: zodResolver(eventFormSchema),
+    defaultValues: {
+      region: 'na',
+    },
   })
 
   const addSuggestedFlight = () => {
@@ -209,8 +213,7 @@ export default function CreateEventPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <Calendar className="h-4 w-4 inline mr-1" />
-                    End Date (Optional)
+                    End Date
                   </label>
                   <input
                     type="date"
@@ -218,6 +221,25 @@ export default function CreateEventPage() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Region *
+                </label>
+                <select
+                  {...register('region')}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                >
+                  <option value="na">North America</option>
+                  <option value="sa">South America</option>
+                  <option value="asia">Asia</option>
+                </select>
+                {errors.region && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.region.message}
+                  </p>
+                )}
               </div>
 
               {/* Suggested Flights */}
