@@ -5,6 +5,7 @@ import { Calendar, Plane, Plus, Edit, Trash2, Eye, Search, Check, Users, MapPin 
 import { format } from 'date-fns'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import ImageUpload from '@/components/ImageUpload'
 
 interface DashboardStats {
   totalEvents: number
@@ -18,6 +19,7 @@ interface SuggestedFlight {
   price: string
   budgetAllow: string
   link: string
+  screenshot?: string
 }
 
 interface Event {
@@ -775,6 +777,7 @@ export default function AdminDashboard() {
                               <th className="px-2 py-1 text-left text-[10px] font-medium text-gray-700 uppercase">Price</th>
                               <th className="px-2 py-1 text-left text-[10px] font-medium text-gray-700 uppercase">Budget</th>
                               <th className="px-2 py-1 text-left text-[10px] font-medium text-gray-700 uppercase">Link</th>
+                              <th className="px-2 py-1 text-left text-[10px] font-medium text-gray-700 uppercase">Screenshot</th>
                               <th className="px-2 py-1 text-left text-[10px] font-medium text-gray-700 uppercase"></th>
                             </tr>
                           </thead>
@@ -824,6 +827,13 @@ export default function AdminDashboard() {
                                     onChange={(e) => updateEditSuggestedFlight(index, 'link', e.target.value)}
                                     className="w-full px-1 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900 placeholder-gray-400"
                                     placeholder="URL"
+                                  />
+                                </td>
+                                <td className="px-2 py-1">
+                                  <ImageUpload
+                                    value={flight.screenshot}
+                                    onChange={(url) => updateEditSuggestedFlight(index, 'screenshot', url)}
+                                    placeholder="Upload"
                                   />
                                 </td>
                                 <td className="px-2 py-1">

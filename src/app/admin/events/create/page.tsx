@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Calendar, MapPin, Users, ArrowLeft, Plus, Trash2, Plane } from 'lucide-react'
 import Link from 'next/link'
+import ImageUpload from '@/components/ImageUpload'
 
 const eventFormSchema = z.object({
   title: z.string().min(1, 'Event title is required'),
@@ -23,6 +24,7 @@ interface SuggestedFlight {
   price: string
   budgetAllow: string
   link: string
+  screenshot?: string
 }
 
 export default function CreateEventPage() {
@@ -189,6 +191,7 @@ export default function CreateEventPage() {
                           <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase">Price (€)</th>
                           <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase">Budget Allow</th>
                           <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase">Booking Link</th>
+                          <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase">Screenshot</th>
                           <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase">Actions</th>
                         </tr>
                       </thead>
@@ -238,6 +241,13 @@ export default function CreateEventPage() {
                                 onChange={(e) => updateSuggestedFlight(index, 'link', e.target.value)}
                                 className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900 placeholder-gray-400"
                                 placeholder="https://..."
+                              />
+                            </td>
+                            <td className="px-3 py-2">
+                              <ImageUpload
+                                value={flight.screenshot}
+                                onChange={(url) => updateSuggestedFlight(index, 'screenshot', url)}
+                                placeholder="Upload"
                               />
                             </td>
                             <td className="px-3 py-2">

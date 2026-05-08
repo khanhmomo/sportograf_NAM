@@ -67,6 +67,7 @@ interface SuggestedFlight {
   price: string
   budgetAllow: string
   link: string
+  screenshot?: string
 }
 
 export default function TravelPage() {
@@ -109,7 +110,6 @@ export default function TravelPage() {
       const response = await fetch('/api/events')
       if (response.ok) {
         const data = await response.json()
-        console.log('Fetched events:', data)
         setEvents(data)
       } else {
         console.error('Failed to fetch events:', response.status)
@@ -381,6 +381,7 @@ export default function TravelPage() {
                           <th className="px-3 py-2 text-left text-xs font-medium text-blue-800 uppercase">To</th>
                           <th className="px-3 py-2 text-left text-xs font-medium text-blue-800 uppercase">Price (€)</th>
                           <th className="px-3 py-2 text-left text-xs font-medium text-blue-800 uppercase">Budget Allow (€)</th>
+                          <th className="px-3 py-2 text-left text-xs font-medium text-blue-800 uppercase">Screenshot</th>
                           <th className="px-3 py-2 text-left text-xs font-medium text-blue-800 uppercase">Action</th>
                         </tr>
                       </thead>
@@ -391,6 +392,17 @@ export default function TravelPage() {
                             <td className="px-3 py-2 text-gray-900">{flight.to}</td>
                             <td className="px-3 py-2 text-gray-900">{flight.price}</td>
                             <td className="px-3 py-2 text-gray-900">{flight.budgetAllow}</td>
+                            <td className="px-3 py-2">
+                              {flight.screenshot ? (
+                                <img
+                                  src={flight.screenshot}
+                                  alt="Flight screenshot"
+                                  className="w-20 h-16 object-cover rounded border border-gray-300"
+                                />
+                              ) : (
+                                <span className="text-gray-400 text-xs">No screenshot</span>
+                              )}
+                            </td>
                             <td className="px-3 py-2">
                               {flight.link ? (
                                 <a

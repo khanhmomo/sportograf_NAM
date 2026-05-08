@@ -6,6 +6,7 @@ export interface SuggestedFlight {
   price: string
   budgetAllow: string
   link: string
+  screenshot?: string
 }
 
 export interface Event {
