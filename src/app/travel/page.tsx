@@ -109,7 +109,10 @@ export default function TravelPage() {
       const response = await fetch('/api/events')
       if (response.ok) {
         const data = await response.json()
+        console.log('Fetched events:', data)
         setEvents(data)
+      } else {
+        console.error('Failed to fetch events:', response.status)
       }
     } catch (error) {
       console.error('Failed to fetch events:', error)
