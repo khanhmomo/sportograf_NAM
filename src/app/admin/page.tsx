@@ -75,6 +75,7 @@ export default function AdminDashboard() {
   const [editSuggestedFlights, setEditSuggestedFlights] = useState<SuggestedFlight[]>([
     { from: '', to: '', price: '', budgetAllow: '', link: '' }
   ])
+  const [activeFlightIndex, setActiveFlightIndex] = useState<number | null>(null)
   const [isUpdating, setIsUpdating] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [loading, setLoading] = useState(true)
@@ -289,6 +290,7 @@ export default function AdminDashboard() {
   }
 
   const handleEditRowPaste = async (e: React.ClipboardEvent, index: number) => {
+    console.log('Paste event triggered for flight index:', index)
     const items = e.clipboardData?.items
     if (items) {
       for (const item of items) {
@@ -296,11 +298,19 @@ export default function AdminDashboard() {
           const file = item.getAsFile()
           if (file) {
             e.preventDefault()
+            console.log('Image file detected, uploading...')
             await uploadImageToEditFlight(file, index)
             break
           }
         }
       }
+    }
+  }
+
+  const handleTablePaste = async (e: React.ClipboardEvent) => {
+    if (activeFlightIndex !== null) {
+      console.log('Global paste triggered for active flight index:', activeFlightIndex)
+      await handleEditRowPaste(e, activeFlightIndex)
     }
   }
 
@@ -817,7 +827,7 @@ export default function AdminDashboard() {
                     </div>
 
                     {editSuggestedFlights.length > 0 && (
-                      <div className="overflow-x-auto">
+                      <div className="overflow-x-auto" onPaste={handleTablePaste}>
                         <table className="min-w-full border border-gray-200 text-xs">
                           <thead className="bg-gray-50">
                             <tr>
@@ -832,7 +842,11 @@ export default function AdminDashboard() {
                           </thead>
                           <tbody className="bg-white divide-y divide-gray-200">
                             {editSuggestedFlights.map((flight, index) => (
-                              <tr key={index} onPaste={(e) => handleEditRowPaste(e, index)}>
+                              <tr 
+                                key={index} 
+                                onClick={() => setActiveFlightIndex(index)}
+                                className={activeFlightIndex === index ? 'bg-blue-50 cursor-pointer' : 'cursor-pointer hover:bg-gray-50'}
+                              >
                                 <td className="px-2 py-1">
                                   <input
                                     type="text"

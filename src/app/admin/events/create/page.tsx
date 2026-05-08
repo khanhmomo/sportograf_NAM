@@ -33,6 +33,7 @@ export default function CreateEventPage() {
   const [suggestedFlights, setSuggestedFlights] = useState<SuggestedFlight[]>([
     { from: '', to: '', price: '', budgetAllow: '', link: '' }
   ])
+  const [activeFlightIndex, setActiveFlightIndex] = useState<number | null>(null)
 
   const {
     register,
@@ -52,6 +53,7 @@ export default function CreateEventPage() {
   }
 
   const handleRowPaste = async (e: React.ClipboardEvent, index: number) => {
+    console.log('Paste event triggered for flight index:', index)
     const items = e.clipboardData?.items
     if (items) {
       for (const item of items) {
@@ -59,11 +61,19 @@ export default function CreateEventPage() {
           const file = item.getAsFile()
           if (file) {
             e.preventDefault()
+            console.log('Image file detected, uploading...')
             await uploadImageToFlight(file, index)
             break
           }
         }
       }
+    }
+  }
+
+  const handleTablePaste = async (e: React.ClipboardEvent) => {
+    if (activeFlightIndex !== null) {
+      console.log('Global paste triggered for active flight index:', activeFlightIndex)
+      await handleRowPaste(e, activeFlightIndex)
     }
   }
 
@@ -231,7 +241,7 @@ export default function CreateEventPage() {
                 </div>
 
                 {suggestedFlights.length > 0 && (
-                  <div className="overflow-x-auto">
+                  <div className="overflow-x-auto" onPaste={handleTablePaste}>
                     <table className="min-w-full border border-gray-200">
                       <thead className="bg-gray-50">
                         <tr>
@@ -246,7 +256,11 @@ export default function CreateEventPage() {
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
                         {suggestedFlights.map((flight, index) => (
-                          <tr key={index} onPaste={(e) => handleRowPaste(e, index)}>
+                          <tr 
+                            key={index} 
+                            onClick={() => setActiveFlightIndex(index)}
+                            className={activeFlightIndex === index ? 'bg-blue-50 cursor-pointer' : 'cursor-pointer hover:bg-gray-50'}
+                          >
                             <td className="px-3 py-2">
                               <input
                                 type="text"
