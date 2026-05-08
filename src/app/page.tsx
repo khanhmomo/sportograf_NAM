@@ -7,7 +7,7 @@ export default function Home() {
       <div className="container mx-auto px-4">
         <div className="text-center mb-6">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Sportograf - Event Tool
+            Sportograf - Digital Forms
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Choose events and submit travel information in one simple platform
