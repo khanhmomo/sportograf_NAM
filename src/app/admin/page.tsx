@@ -12,6 +12,14 @@ interface DashboardStats {
   pendingTravelForms: number
 }
 
+interface SuggestedFlight {
+  from: string
+  to: string
+  price: string
+  budgetAllow: string
+  link: string
+}
+
 interface Event {
   id: string
   title: string
@@ -19,6 +27,7 @@ interface Event {
   startDate: Date
   endDate?: Date
   isActive: boolean
+  suggestedFlights?: SuggestedFlight[]
   _count?: {
     eventRegistrations: number
     travelForms: number
@@ -61,6 +70,9 @@ export default function AdminDashboard() {
     startDate: '',
     endDate: ''
   })
+  const [editSuggestedFlights, setEditSuggestedFlights] = useState<SuggestedFlight[]>([
+    { from: '', to: '', price: '', budgetAllow: '', link: '' }
+  ])
   const [isUpdating, setIsUpdating] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [loading, setLoading] = useState(true)
@@ -240,6 +252,10 @@ export default function AdminDashboard() {
         startDate: format(new Date(event.startDate), 'yyyy-MM-dd'),
         endDate: event.endDate ? format(new Date(event.endDate), 'yyyy-MM-dd') : ''
       })
+      setEditSuggestedFlights(event.suggestedFlights && event.suggestedFlights.length > 0 
+        ? event.suggestedFlights 
+        : [{ from: '', to: '', price: '', budgetAllow: '', link: '' }]
+      )
       setIsEditingEvent(true)
     }
   }
@@ -248,10 +264,26 @@ export default function AdminDashboard() {
     setIsEditingEvent(false)
     setEditingEventId(null)
     setEditForm({ title: '', location: '', startDate: '', endDate: '' })
+    setEditSuggestedFlights([{ from: '', to: '', price: '', budgetAllow: '', link: '' }])
   }
 
   const handleEditFormChange = (field: string, value: string) => {
     setEditForm(prev => ({ ...prev, [field]: value }))
+  }
+
+  const addEditSuggestedFlight = () => {
+    setEditSuggestedFlights([...editSuggestedFlights, { from: '', to: '', price: '', budgetAllow: '', link: '' }])
+  }
+
+  const removeEditSuggestedFlight = (index: number) => {
+    const newFlights = editSuggestedFlights.filter((_, i) => i !== index)
+    setEditSuggestedFlights(newFlights.length > 0 ? newFlights : [{ from: '', to: '', price: '', budgetAllow: '', link: '' }])
+  }
+
+  const updateEditSuggestedFlight = (index: number, field: keyof SuggestedFlight, value: string) => {
+    const newFlights = [...editSuggestedFlights]
+    newFlights[index][field] = value
+    setEditSuggestedFlights(newFlights)
   }
 
   const updateEvent = async () => {
@@ -264,7 +296,10 @@ export default function AdminDashboard() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(editForm),
+        body: JSON.stringify({
+          ...editForm,
+          suggestedFlights: editSuggestedFlights.filter(f => f.from && f.to),
+        }),
       })
 
       if (response.ok) {
@@ -709,6 +744,102 @@ export default function AdminDashboard() {
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 text-sm md:text-base"
                       />
                     </div>
+                  </div>
+
+                  {/* Suggested Flights */}
+                  <div className="border-t pt-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-sm font-semibold text-gray-900 flex items-center">
+                        <Plane className="h-4 w-4 mr-2" />
+                        Suggested Flights
+                      </h4>
+                      <button
+                        type="button"
+                        onClick={addEditSuggestedFlight}
+                        className="flex items-center px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                      >
+                        <Plus className="h-3 w-3 mr-1" />
+                        Add
+                      </button>
+                    </div>
+
+                    {editSuggestedFlights.length > 0 && (
+                      <div className="overflow-x-auto">
+                        <table className="min-w-full border border-gray-200 text-xs">
+                          <thead className="bg-gray-50">
+                            <tr>
+                              <th className="px-2 py-1 text-left text-[10px] font-medium text-gray-700 uppercase">From</th>
+                              <th className="px-2 py-1 text-left text-[10px] font-medium text-gray-700 uppercase">To</th>
+                              <th className="px-2 py-1 text-left text-[10px] font-medium text-gray-700 uppercase">Price</th>
+                              <th className="px-2 py-1 text-left text-[10px] font-medium text-gray-700 uppercase">Budget</th>
+                              <th className="px-2 py-1 text-left text-[10px] font-medium text-gray-700 uppercase">Link</th>
+                              <th className="px-2 py-1 text-left text-[10px] font-medium text-gray-700 uppercase"></th>
+                            </tr>
+                          </thead>
+                          <tbody className="bg-white divide-y divide-gray-200">
+                            {editSuggestedFlights.map((flight, index) => (
+                              <tr key={index}>
+                                <td className="px-2 py-1">
+                                  <input
+                                    type="text"
+                                    value={flight.from}
+                                    onChange={(e) => updateEditSuggestedFlight(index, 'from', e.target.value)}
+                                    className="w-full px-1 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900 placeholder-gray-400"
+                                    placeholder="From"
+                                  />
+                                </td>
+                                <td className="px-2 py-1">
+                                  <input
+                                    type="text"
+                                    value={flight.to}
+                                    onChange={(e) => updateEditSuggestedFlight(index, 'to', e.target.value)}
+                                    className="w-full px-1 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900 placeholder-gray-400"
+                                    placeholder="To"
+                                  />
+                                </td>
+                                <td className="px-2 py-1">
+                                  <input
+                                    type="text"
+                                    value={flight.price}
+                                    onChange={(e) => updateEditSuggestedFlight(index, 'price', e.target.value)}
+                                    className="w-full px-1 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900 placeholder-gray-400"
+                                    placeholder="€"
+                                  />
+                                </td>
+                                <td className="px-2 py-1">
+                                  <input
+                                    type="text"
+                                    value={flight.budgetAllow}
+                                    onChange={(e) => updateEditSuggestedFlight(index, 'budgetAllow', e.target.value)}
+                                    className="w-full px-1 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900 placeholder-gray-400"
+                                    placeholder="€"
+                                  />
+                                </td>
+                                <td className="px-2 py-1">
+                                  <input
+                                    type="text"
+                                    value={flight.link}
+                                    onChange={(e) => updateEditSuggestedFlight(index, 'link', e.target.value)}
+                                    className="w-full px-1 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900 placeholder-gray-400"
+                                    placeholder="URL"
+                                  />
+                                </td>
+                                <td className="px-2 py-1">
+                                  <button
+                                    type="button"
+                                    onClick={() => removeEditSuggestedFlight(index)}
+                                    className="text-red-600 hover:text-red-900 hover:bg-red-50 p-1 rounded"
+                                    title="Remove"
+                                  >
+                                    <Trash2 className="h-3 w-3" />
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
                   </div>
                 </form>
               </div>

@@ -1,5 +1,13 @@
 import { ObjectId } from 'mongodb'
 
+export interface SuggestedFlight {
+  from: string
+  to: string
+  price: string
+  budgetAllow: string
+  link: string
+}
+
 export interface Event {
   _id?: ObjectId
   title: string
@@ -9,6 +17,7 @@ export interface Event {
   endDate?: Date
   maxCapacity?: number
   isActive: boolean
+  suggestedFlights?: SuggestedFlight[]
   createdAt: Date
   updatedAt: Date
 }

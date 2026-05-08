@@ -58,6 +58,15 @@ interface Event {
   location?: string
   startDate: string
   endDate?: string
+  suggestedFlights?: SuggestedFlight[]
+}
+
+interface SuggestedFlight {
+  from: string
+  to: string
+  price: string
+  budgetAllow: string
+  link: string
 }
 
 export default function TravelPage() {
@@ -66,6 +75,7 @@ export default function TravelPage() {
   const [events, setEvents] = useState<Event[]>([])
   const [selectedTravelMethod, setSelectedTravelMethod] = useState<string>('')
   const [activeFlightTab, setActiveFlightTab] = useState<'departure' | 'arrival'>('departure')
+  const [selectedEventSuggestedFlights, setSelectedEventSuggestedFlights] = useState<SuggestedFlight[]>([])
   const { showToast } = useToast()
 
   const {
@@ -79,10 +89,20 @@ export default function TravelPage() {
   })
 
   const travelMethod = watch('travelMethod')
+  const eventId = watch('eventId')
 
   useEffect(() => {
     fetchEvents()
   }, [])
+
+  useEffect(() => {
+    if (eventId) {
+      const selectedEvent = events.find(e => e.id === eventId)
+      setSelectedEventSuggestedFlights(selectedEvent?.suggestedFlights || [])
+    } else {
+      setSelectedEventSuggestedFlights([])
+    }
+  }, [eventId, events])
 
   const fetchEvents = async () => {
     try {
@@ -342,6 +362,53 @@ export default function TravelPage() {
                   </p>
                 )}
               </div>
+
+              {/* Suggested Flights */}
+              {selectedEventSuggestedFlights.length > 0 && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h3 className="text-sm font-semibold text-blue-900 mb-3 flex items-center">
+                    <Plane className="h-4 w-4 mr-2" />
+                    Suggested Flights for This Event
+                  </h3>
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full text-sm">
+                      <thead className="bg-blue-100">
+                        <tr>
+                          <th className="px-3 py-2 text-left text-xs font-medium text-blue-800 uppercase">From</th>
+                          <th className="px-3 py-2 text-left text-xs font-medium text-blue-800 uppercase">To</th>
+                          <th className="px-3 py-2 text-left text-xs font-medium text-blue-800 uppercase">Price (€)</th>
+                          <th className="px-3 py-2 text-left text-xs font-medium text-blue-800 uppercase">Budget Allow (€)</th>
+                          <th className="px-3 py-2 text-left text-xs font-medium text-blue-800 uppercase">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-blue-200">
+                        {selectedEventSuggestedFlights.map((flight, index) => (
+                          <tr key={index}>
+                            <td className="px-3 py-2 text-gray-900">{flight.from}</td>
+                            <td className="px-3 py-2 text-gray-900">{flight.to}</td>
+                            <td className="px-3 py-2 text-gray-900">{flight.price}</td>
+                            <td className="px-3 py-2 text-gray-900">{flight.budgetAllow}</td>
+                            <td className="px-3 py-2">
+                              {flight.link ? (
+                                <a
+                                  href={flight.link}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition-colors"
+                                >
+                                  Show Flight
+                                </a>
+                              ) : (
+                                <span className="text-gray-400 text-xs">No link</span>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
 
               {/* Travel Method Selection */}
               <div>
