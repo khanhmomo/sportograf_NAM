@@ -40,6 +40,8 @@ interface TravelForm {
   busArrivalTime?: string
   busDepartureDate?: string
   busDepartureTime?: string
+  // Ticket cost for flight/bus/train
+  ticketCost?: string
   // Accommodation - hotel nights
   accommodationNeeded?: string
   hotelNights?: string[]
@@ -278,6 +280,7 @@ function TravelFormsPageContent() {
         'Departure Flight/Train #': getDepartureFlightTrainNumber(),
         'Departure Airport/Station': getDepartureAirportStation(),
         'Car Rental': form.carRentalReservation || '',
+        'Ticket Cost': form.ticketCost || '',
         Note: form.specialRequests || ''
       }
     })
@@ -410,6 +413,7 @@ function TravelFormsPageContent() {
                     <th className="px-2 py-2 text-left text-[10px] font-bold text-gray-900 uppercase tracking-wider border-r border-gray-300">Flight/Train #</th>
                     <th className="px-2 py-2 text-left text-[10px] font-bold text-gray-900 uppercase tracking-wider border-r border-gray-300">Departure Airport/Station</th>
                     <th className="px-2 py-2 text-left text-[10px] font-bold text-gray-900 uppercase tracking-wider border-r border-gray-300">Car Rental</th>
+                    <th className="px-2 py-2 text-left text-[10px] font-bold text-gray-900 uppercase tracking-wider border-r border-gray-300">Ticket Cost</th>
                     <th className="px-2 py-2 text-left text-[10px] font-bold text-gray-900 uppercase tracking-wider border-r border-gray-300">Note</th>
                     <th className="px-2 py-2 text-left text-[10px] font-bold text-gray-900 uppercase tracking-wider"></th>
                   </tr>
@@ -523,6 +527,7 @@ function TravelFormsPageContent() {
                         <td className="px-2 py-2 whitespace-nowrap text-[10px] text-gray-900 border-r border-gray-300">{getDepartureFlightTrainNumber()}</td>
                         <td className="px-2 py-2 whitespace-nowrap text-[10px] text-gray-900 border-r border-gray-300">{getDepartureAirportStation()}</td>
                         <td className="px-2 py-2 whitespace-nowrap text-[10px] text-gray-900 border-r border-gray-300">{form.carRentalReservation || ''}</td>
+                        <td className="px-2 py-2 whitespace-nowrap text-[10px] text-gray-900 border-r border-gray-300">{form.ticketCost || ''}</td>
                         <td className="px-2 py-2 whitespace-nowrap text-[10px] text-gray-900 border-r border-gray-300">{form.specialRequests || ''}</td>
                         <td className="px-2 py-2 whitespace-nowrap text-[10px] text-gray-900">
                           <div className="flex space-x-1">
@@ -684,6 +689,7 @@ function TravelFormsPageContent() {
                       <div><span className="text-gray-500">Departure Flight/Train #:</span> {getDepartureFlightTrainNumber()}</div>
                       <div><span className="text-gray-500">Departure Airport/Station:</span> {getDepartureAirportStation()}</div>
                       <div><span className="text-gray-500">Car Rental Reservation:</span> {form.carRentalReservation || ''}</div>
+                      <div><span className="text-gray-500">Ticket Cost:</span> {form.ticketCost || ''}</div>
                       <div><span className="text-gray-500">Note:</span> {form.specialRequests || ''}</div>
                     </div>
                   </div>
@@ -1201,6 +1207,20 @@ function TravelFormsPageContent() {
                               </div>
                             </div>
                           </div>
+                        </div>
+                      )}
+
+                      {/* Ticket Cost for Flight/Bus */}
+                      {(editingForm.travelMethod === 'flight' || editingForm.travelMethod === 'bus') && (
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Ticket Cost (€)</label>
+                          <input
+                            type="text"
+                            value={editingForm.ticketCost || ''}
+                            onChange={(e) => setEditingForm({...editingForm, ticketCost: e.target.value})}
+                            className="w-full px-3 py-2 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder-gray-500"
+                            placeholder="Enter ticket cost"
+                          />
                         </div>
                       )}
 

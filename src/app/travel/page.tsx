@@ -41,6 +41,8 @@ const travelFormSchema = z.object({
   busArrivalTime: z.string().optional(),
   busDepartureDate: z.string().optional(),
   busDepartureTime: z.string().optional(),
+  // Ticket cost for flight/bus/train
+  ticketCost: z.string().optional(),
   // Accommodation request - hotel nights
   accommodationNeeded: z.enum(['yes', 'no']).optional(),
   hotelNights: z.array(z.string()).optional(),
@@ -1032,6 +1034,17 @@ export default function TravelPage() {
                           </div>
                         )}
                       </div>
+
+                      {/* Ticket Cost */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Ticket Cost (€)</label>
+                        <input
+                          type="text"
+                          {...register('ticketCost')}
+                          className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
+                          placeholder="Enter ticket cost"
+                        />
+                      </div>
                     </div>
                   )}
 
@@ -1121,6 +1134,17 @@ export default function TravelPage() {
                             className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
                           />
                         </div>
+                      </div>
+
+                      {/* Ticket Cost */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Ticket Cost (€)</label>
+                        <input
+                          type="text"
+                          {...register('ticketCost')}
+                          className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
+                          placeholder="Enter ticket cost"
+                        />
                       </div>
                     </div>
                   )}
