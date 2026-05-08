@@ -109,6 +109,24 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<'events'>('events')
 
   useEffect(() => {
+    // Check authentication first
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/admin/auth/verify')
+        if (!response.ok) {
+          router.push('/admin/login')
+          return
+        }
+      } catch (error) {
+        router.push('/admin/login')
+        return
+      }
+    }
+
+    checkAuth()
+  }, [router])
+
+  useEffect(() => {
     fetchDashboardData()
     
     // Set up real-time polling for dashboard data
