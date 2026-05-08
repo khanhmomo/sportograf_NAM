@@ -318,10 +318,12 @@ export default function AdminDashboard() {
     router.push('/admin/login')
   }
 
-  const filteredEvents = events.filter(event =>
-    event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (event.location && event.location.toLowerCase().includes(searchTerm.toLowerCase()))
-  )
+  const filteredEvents = events
+    .filter(event =>
+      event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (event.location && event.location.toLowerCase().includes(searchTerm.toLowerCase()))
+    )
+    .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
 
   if (loading) {
     return (
