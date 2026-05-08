@@ -290,7 +290,6 @@ export default function AdminDashboard() {
   }
 
   const handleEditRowPaste = async (e: React.ClipboardEvent, index: number) => {
-    console.log('Paste event triggered for flight index:', index)
     const items = e.clipboardData?.items
     if (items) {
       for (const item of items) {
@@ -298,7 +297,6 @@ export default function AdminDashboard() {
           const file = item.getAsFile()
           if (file) {
             e.preventDefault()
-            console.log('Image file detected, uploading...')
             await uploadImageToEditFlight(file, index)
             break
           }
@@ -309,7 +307,6 @@ export default function AdminDashboard() {
 
   const handleTablePaste = async (e: React.ClipboardEvent) => {
     if (activeFlightIndex !== null) {
-      console.log('Global paste triggered for active flight index:', activeFlightIndex)
       await handleEditRowPaste(e, activeFlightIndex)
     }
   }

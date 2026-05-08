@@ -53,7 +53,6 @@ export default function CreateEventPage() {
   }
 
   const handleRowPaste = async (e: React.ClipboardEvent, index: number) => {
-    console.log('Paste event triggered for flight index:', index)
     const items = e.clipboardData?.items
     if (items) {
       for (const item of items) {
@@ -61,7 +60,6 @@ export default function CreateEventPage() {
           const file = item.getAsFile()
           if (file) {
             e.preventDefault()
-            console.log('Image file detected, uploading...')
             await uploadImageToFlight(file, index)
             break
           }
@@ -72,7 +70,6 @@ export default function CreateEventPage() {
 
   const handleTablePaste = async (e: React.ClipboardEvent) => {
     if (activeFlightIndex !== null) {
-      console.log('Global paste triggered for active flight index:', activeFlightIndex)
       await handleRowPaste(e, activeFlightIndex)
     }
   }
