@@ -51,7 +51,8 @@ export async function POST(request: NextRequest) {
       startDate: new Date(body.startDate),
       endDate: body.endDate ? new Date(body.endDate) : undefined,
       maxCapacity: undefined,
-      isActive: true
+      isActive: true,
+      suggestedFlights: body.suggestedFlights || undefined
     }
     
     const result = await eventsCollection.insertOne({
