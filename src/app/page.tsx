@@ -42,9 +42,9 @@ export default function Home() {
 
           <Link
             href="/asia"
-            className="flex-1 bg-white rounded-lg shadow-lg p-12 hover:shadow-xl transition-all duration-300 text-center border-4 border-purple-500 hover:border-purple-600"
+            className="flex-1 bg-white rounded-lg shadow-lg p-12 hover:shadow-xl transition-all duration-300 text-center border-4 border-red-800 hover:border-red-900"
           >
-            <h2 className="text-3xl font-bold text-purple-600 mb-2">
+            <h2 className="text-3xl font-bold text-red-800 mb-2">
               Asia
             </h2>
             <p className="text-gray-600">
