@@ -73,7 +73,7 @@ function TravelFormsPageContent() {
     // Set up real-time polling for travel forms
     const interval = setInterval(() => {
       fetchTravelForms()
-    }, 5000) // Poll every 5 seconds
+    }, 3000) // Poll every 3 seconds for more responsive updates
 
     return () => clearInterval(interval)
   }, [eventId])
@@ -129,12 +129,19 @@ function TravelFormsPageContent() {
       })
 
       if (response.ok) {
-        // Refresh the travel forms data immediately
-        await fetchTravelForms()
+        // Immediately remove the form from the local state for instant UI update
+        setTravelForms(prev => prev.filter(form => form.id !== formId))
+        
         // Close the detail modal if the deleted form was selected
         if (selectedForm?.id === formId) {
           setSelectedForm(null)
         }
+        
+        // Also refresh from server to ensure consistency
+        await fetchTravelForms()
+        
+        // Update the last updated time for real-time indicator
+        setLastUpdated(new Date())
       } else {
         console.error('Failed to delete travel form')
       }
