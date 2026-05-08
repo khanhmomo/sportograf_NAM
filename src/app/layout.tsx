@@ -15,12 +15,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Sportograf North America - Event Management",
-  description: "Choose events and submit travel information for Sportograf North America events. Manage registrations, travel forms, and event logistics in one platform.",
-  keywords: "Sportograf, North America, events, travel, registration, sports management",
-  authors: [{ name: "Sportograf North America" }],
-  creator: "Sportograf North America",
-  publisher: "Sportograf North America",
+  title: "Sportograf Digital Forms - Event Management",
+  description: "Choose events and submit travel information for Sportograf events. Manage registrations, travel forms, and event logistics in one platform.",
+  keywords: "Sportograf, events, travel, registration, sports management",
+  authors: [{ name: "Sportograf" }],
+  creator: "Sportograf",
+  publisher: "Sportograf",
   formatDetection: {
     email: false,
     address: false,
@@ -31,10 +31,10 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: "Sportograf North America - Event Management",
-    description: "Choose events and submit travel information for Sportograf North America events. Manage registrations, travel forms, and event logistics in one platform.",
+    title: "Sportograf Digital Forms - Event Management",
+    description: "Choose events and submit travel information for Sportograf events. Manage registrations, travel forms, and event logistics in one platform.",
     url: 'https://sportograf-nam.vercel.app',
-    siteName: "Sportograf North America",
+    siteName: "Sportograf Digital Forms",
     images: [
       {
         url: 'https://www.sportograf.com/images/sg-logo-new-no-text.png',
@@ -48,8 +48,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Sportograf North America - Event Management",
-    description: "Choose events and submit travel information for Sportograf North America events",
+    title: "Sportograf Digital Forms - Event Management",
+    description: "Choose events and submit travel information for Sportograf events",
     images: ['https://www.sportograf.com/images/sg-logo-new-no-text.png'],
     creator: '@sportograf',
   },
