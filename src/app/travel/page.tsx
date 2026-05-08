@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect, Fragment } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Plane, Calendar, MapPin, CheckCircle, Car, Train } from 'lucide-react'
+import { Calendar, Plane, X, CheckCircle, Car, Train } from 'lucide-react'
 import { useToast } from '@/hooks/useToast'
 
 const travelFormSchema = z.object({
@@ -77,6 +77,7 @@ export default function TravelPage() {
   const [selectedTravelMethod, setSelectedTravelMethod] = useState<string>('')
   const [activeFlightTab, setActiveFlightTab] = useState<'departure' | 'arrival'>('departure')
   const [selectedEventSuggestedFlights, setSelectedEventSuggestedFlights] = useState<SuggestedFlight[]>([])
+  const [expandedScreenshotIndex, setExpandedScreenshotIndex] = useState<number | null>(null)
   const { showToast } = useToast()
 
   const {
@@ -387,37 +388,68 @@ export default function TravelPage() {
                       </thead>
                       <tbody className="bg-white divide-y divide-blue-200">
                         {selectedEventSuggestedFlights.map((flight, index) => (
-                          <tr key={index}>
-                            <td className="px-3 py-2 text-gray-900">{flight.from}</td>
-                            <td className="px-3 py-2 text-gray-900">{flight.to}</td>
-                            <td className="px-3 py-2 text-gray-900">{flight.price}</td>
-                            <td className="px-3 py-2 text-gray-900">{flight.budgetAllow}</td>
-                            <td className="px-3 py-2">
-                              {flight.screenshot ? (
-                                <img
-                                  src={flight.screenshot}
-                                  alt="Flight screenshot"
-                                  className="w-20 h-16 object-cover rounded border border-gray-300"
-                                />
-                              ) : (
-                                <span className="text-gray-400 text-xs">No screenshot</span>
-                              )}
-                            </td>
-                            <td className="px-3 py-2">
-                              {flight.link ? (
-                                <a
-                                  href={flight.link}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="inline-flex items-center px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition-colors"
-                                >
-                                  Show Flight
-                                </a>
-                              ) : (
-                                <span className="text-gray-400 text-xs">No link</span>
-                              )}
-                            </td>
-                          </tr>
+                          <Fragment key={index}>
+                            <tr>
+                              <td className="px-3 py-2 text-gray-900">{flight.from}</td>
+                              <td className="px-3 py-2 text-gray-900">{flight.to}</td>
+                              <td className="px-3 py-2 text-gray-900">{flight.price}</td>
+                              <td className="px-3 py-2 text-gray-900">{flight.budgetAllow}</td>
+                              <td className="px-3 py-2">
+                                {flight.screenshot ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => setExpandedScreenshotIndex(expandedScreenshotIndex === index ? null : index)}
+                                    className="cursor-pointer"
+                                  >
+                                    <img
+                                      src={flight.screenshot}
+                                      alt="Flight screenshot"
+                                      className="w-20 h-16 object-cover rounded border border-gray-300 hover:opacity-80 transition-opacity"
+                                    />
+                                  </button>
+                                ) : (
+                                  <span className="text-gray-400 text-xs">No screenshot</span>
+                                )}
+                              </td>
+                              <td className="px-3 py-2">
+                                {flight.link ? (
+                                  <a
+                                    href={flight.link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition-colors"
+                                  >
+                                    Show Flight
+                                  </a>
+                                ) : (
+                                  <span className="text-gray-400 text-xs">No link</span>
+                                )}
+                              </td>
+                            </tr>
+                            {expandedScreenshotIndex === index && flight.screenshot && (
+                              <tr>
+                                <td colSpan={6} className="px-3 py-4 bg-blue-50">
+                                  <div className="flex flex-col items-center">
+                                    <div className="relative inline-block">
+                                      <button
+                                        type="button"
+                                        onClick={() => setExpandedScreenshotIndex(null)}
+                                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                                      >
+                                        <X className="h-4 w-4" />
+                                      </button>
+                                      <img
+                                        src={flight.screenshot}
+                                        alt="Flight screenshot full size"
+                                        className="max-w-full max-h-96 object-contain rounded border border-gray-300"
+                                      />
+                                    </div>
+                                    <p className="text-xs text-gray-600 mt-2">Flight: {flight.from} → {flight.to}</p>
+                                  </div>
+                                </td>
+                              </tr>
+                            )}
+                          </Fragment>
                         ))}
                       </tbody>
                     </table>
