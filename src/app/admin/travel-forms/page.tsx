@@ -651,8 +651,8 @@ function TravelFormsPageContent() {
                   <div key={form.id} className="bg-white rounded-lg shadow p-4">
                     <div className="flex justify-between items-start mb-3">
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-base font-semibold text-gray-900 truncate">{form.name}</h3>
-                        <div className="text-xs text-gray-500 mt-1">{form.email}</div>
+                        <h3 className="text-base font-semibold text-gray-900 truncate">{form.acronym} - {form.name}</h3>
+                        <div className="text-xs text-gray-900 mt-1">{form.email}</div>
                       </div>
                       <div className="flex space-x-2 ml-2">
                         <button
@@ -674,23 +674,22 @@ function TravelFormsPageContent() {
                     
                     <div className="space-y-2 text-xs">
                       <div className="grid grid-cols-2 gap-2">
-                        <div><span className="text-gray-500">Acronym:</span> {form.acronym}</div>
-                        <div><span className="text-gray-500">Transport:</span> {form.travelMethod}</div>
-                        <div><span className="text-gray-500">Phone:</span> {form.phoneNumber}</div>
-                        <div><span className="text-gray-500">Email:</span> {form.email}</div>
-                        <div><span className="text-gray-500">Miles:</span> {form.travelMethod === 'car' ? (form.expectedMiles || '') : ''}</div>
-                        <div><span className="text-gray-500">Hotel:</span> {getHotelInfo()}</div>
-                        <div><span className="text-gray-500">Gender:</span> {form.gender || ''}</div>
-                        <div><span className="text-gray-500">Flight/Train #:</span> {getFlightTrainNumber()}</div>
+                        <div><span className="text-gray-900">Transport:</span> <span className="text-gray-900">{form.travelMethod}</span></div>
+                        <div><span className="text-gray-900">Phone:</span> <span className="text-gray-900">{form.phoneNumber}</span></div>
+                        <div><span className="text-gray-900">Email:</span> <span className="text-gray-900">{form.email}</span></div>
+                        <div><span className="text-gray-900">Miles:</span> <span className="text-gray-900">{form.travelMethod === 'car' ? (form.expectedMiles || '') : ''}</span></div>
+                        <div><span className="text-gray-900">Hotel:</span> <span className="text-gray-900">{getHotelInfo()}</span></div>
+                        <div><span className="text-gray-900">Gender:</span> <span className="text-gray-900">{form.gender || ''}</span></div>
                       </div>
-                      <div><span className="text-gray-500">Arrival Airport/Station:</span> {getArrivalAirportStation()}</div>
-                      <div><span className="text-gray-500">Arrival Date:</span> {formatDate(getArrivalDate())}</div>
-                      <div><span className="text-gray-500">Departure Date:</span> {formatDate(getDepartureDate())}</div>
-                      <div><span className="text-gray-500">Departure Flight/Train #:</span> {getDepartureFlightTrainNumber()}</div>
-                      <div><span className="text-gray-500">Departure Airport/Station:</span> {getDepartureAirportStation()}</div>
-                      <div><span className="text-gray-500">Car Rental Reservation:</span> {form.carRentalReservation || ''}</div>
-                      <div><span className="text-gray-500">Ticket Cost:</span> {form.ticketCost || ''}</div>
-                      <div><span className="text-gray-500">Note:</span> {form.specialRequests || ''}</div>
+                      <div><span className="text-gray-900">Arrival Flight/Train #:</span> <span className="text-gray-900">{getFlightTrainNumber()}</span></div>
+                      <div><span className="text-gray-900">Arrival Airport/Station:</span> <span className="text-gray-900">{getArrivalAirportStation()}</span></div>
+                      <div><span className="text-gray-900">Arrival Date:</span> <span className="text-gray-900">{formatDate(getArrivalDate())}</span></div>
+                      <div><span className="text-gray-900">Departure Date:</span> <span className="text-gray-900">{formatDate(getDepartureDate())}</span></div>
+                      <div><span className="text-gray-900">Departure Flight/Train #:</span> <span className="text-gray-900">{getDepartureFlightTrainNumber()}</span></div>
+                      <div><span className="text-gray-900">Departure Airport/Station:</span> <span className="text-gray-900">{getDepartureAirportStation()}</span></div>
+                      <div><span className="text-gray-900">Car Rental Reservation:</span> <span className="text-gray-900">{form.carRentalReservation || ''}</span></div>
+                      <div><span className="text-gray-900">Ticket Cost:</span> <span className="text-gray-900">{form.ticketCost || ''}</span></div>
+                      <div><span className="text-gray-900">Note:</span> <span className="text-gray-900">{form.specialRequests || ''}</span></div>
                     </div>
                   </div>
                 )
