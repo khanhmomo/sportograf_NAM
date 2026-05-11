@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     try {
       await sendEmail({
         to: body.email.toLowerCase(),
-        subject: 'Travel Form Confirmation',
+        subject: 'Sportograf - Travel Form Confirmation',
         html: getTravelFormConfirmationEmail(body.name, eventTitle, 'Asia')
       })
     } catch (emailError) {

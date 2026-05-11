@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
     try {
       await sendEmail({
         to: userInfo.email.toLowerCase(),
-        subject: 'Event Request Confirmation',
+        subject: 'Sportograf - Event Request Confirmation',
         html: getEventRequestConfirmationEmail(userInfo.name, event.title)
       })
     } catch (emailError) {

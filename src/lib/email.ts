@@ -40,7 +40,7 @@ export function getEventRequestConfirmationEmail(name: string, eventTitle: strin
     <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Event Request Confirmation</title>
+      <title>Sportograf - Event Request Confirmation</title>
       <style>
         body {
           font-family: Arial, sans-serif;
@@ -79,7 +79,7 @@ export function getEventRequestConfirmationEmail(name: string, eventTitle: strin
     <body>
       <div class="container">
         <div class="header">
-          <h1>Event Request Confirmation</h1>
+          <h1>Sportograf - Event Request Confirmation</h1>
         </div>
         <div class="content">
           <p>Dear ${name},</p>
@@ -93,10 +93,10 @@ export function getEventRequestConfirmationEmail(name: string, eventTitle: strin
           
           <p>You will receive a notification once your request has been reviewed. If you have any questions, please contact the administrator.</p>
           
-          <p>Best regards,<br>The Event Team</p>
+          <p>Best regards,<br>The Sportograf Event Team</p>
         </div>
         <div class="footer">
-          <p>This is an automated email. Please do not reply.</p>
+          <p>This is an automated email from Sportograf. Please do not reply.</p>
         </div>
       </div>
     </body>
@@ -112,7 +112,7 @@ export function getTravelFormConfirmationEmail(name: string, eventTitle: string,
     <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Travel Form Confirmation</title>
+      <title>Sportograf - Travel Form Confirmation</title>
       <style>
         body {
           font-family: Arial, sans-serif;
@@ -151,7 +151,7 @@ export function getTravelFormConfirmationEmail(name: string, eventTitle: string,
     <body>
       <div class="container">
         <div class="header">
-          <h1>Travel Form Confirmation</h1>
+          <h1>Sportograf - Travel Form Confirmation</h1>
         </div>
         <div class="content">
           <p>Dear ${name},</p>
@@ -166,10 +166,10 @@ export function getTravelFormConfirmationEmail(name: string, eventTitle: string,
           
           <p>You will receive a notification once your travel form has been reviewed. If you have any questions, please contact the administrator.</p>
           
-          <p>Best regards,<br>The Travel Team</p>
+          <p>Best regards,<br>The Sportograf Travel Team</p>
         </div>
         <div class="footer">
-          <p>This is an automated email. Please do not reply.</p>
+          <p>This is an automated email from Sportograf. Please do not reply.</p>
         </div>
       </div>
     </body>
