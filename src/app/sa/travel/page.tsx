@@ -92,7 +92,6 @@ export default function TravelPage() {
   const [selectedTravelMethod, setSelectedTravelMethod] = useState<string>('')
   const [selectedEventSuggestedFlights, setSelectedEventSuggestedFlights] = useState<SuggestedFlight[]>([])
   const [expandedScreenshotIndex, setExpandedScreenshotIndex] = useState<number | null>(null)
-  const [selectedItinerary, setSelectedItinerary] = useState<string>('')
   const [budgetWarning, setBudgetWarning] = useState<string>('')
   const { showToast } = useToast()
 
@@ -108,6 +107,7 @@ export default function TravelPage() {
 
   const travelMethod = watch('travelMethod')
   const eventId = watch('eventId')
+  const selectedItinerary = watch('selectedItinerary')
 
   useEffect(() => {
     fetchEvents()
@@ -159,17 +159,6 @@ export default function TravelPage() {
     e.target.value = formattedValue
     // Trigger the react-hook-form onChange
     e.target.dispatchEvent(new Event('input', { bubbles: true }))
-  }
-
-  const handleItineraryChange = (value: string) => {
-    setSelectedItinerary(value)
-    if (value && selectedEventSuggestedFlights.length > 0) {
-      const index = parseInt(value)
-      const flight = selectedEventSuggestedFlights[index]
-      // Auto-fill flight details from selected itinerary
-      // Note: The suggested flights don't have all the flight details, so we'll just fill what we can
-      // The user can still manually edit the fields
-    }
   }
 
   const handleTicketCostChange = (value: string) => {
@@ -569,7 +558,6 @@ export default function TravelPage() {
                               <label className="block text-xs font-medium text-gray-700 mb-1">Select Suggested Itinerary</label>
                               <select
                                 {...register('selectedItinerary')}
-                                onChange={(e) => handleItineraryChange(e.target.value)}
                                 className="w-full px-2 py-1 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                               >
                                 <option value="">Select an itinerary...</option>
@@ -933,7 +921,6 @@ export default function TravelPage() {
                           <label className="block text-sm font-medium text-gray-700 mb-1">Select Suggested Itinerary</label>
                           <select
                             {...register('selectedItinerary')}
-                            onChange={(e) => handleItineraryChange(e.target.value)}
                             className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                           >
                             <option value="">Select an itinerary...</option>
