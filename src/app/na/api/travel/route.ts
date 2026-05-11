@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getTravelFormsCollection, getEventsCollection } from '@/lib/mongodb'
 import { ObjectId } from 'mongodb'
+import { sendEmail, getTravelFormConfirmationEmail } from '@/lib/email'
 
 export async function POST(request: NextRequest) {
   try {
@@ -43,6 +44,18 @@ export async function POST(request: NextRequest) {
     }
     
     const result = await travelFormsCollection.insertOne(newForm)
+    
+    // Send confirmation email
+    try {
+      await sendEmail({
+        to: body.email.toLowerCase(),
+        subject: 'Travel Form Confirmation',
+        html: getTravelFormConfirmationEmail(body.name, eventTitle, 'NA')
+      })
+    } catch (emailError) {
+      console.error('Failed to send confirmation email:', emailError)
+      // Don't fail the request if email fails, just log it
+    }
     
     return NextResponse.json({
       id: result.insertedId.toString(),
