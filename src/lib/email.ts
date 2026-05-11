@@ -105,7 +105,19 @@ export function getEventRequestConfirmationEmail(name: string, eventTitle: strin
 }
 
 // Template for travel form confirmation email
-export function getTravelFormConfirmationEmail(name: string, eventTitle: string, region: string): string {
+export function getTravelFormConfirmationEmail(
+  name: string, 
+  eventTitle: string, 
+  region: string,
+  travelMethod?: string,
+  accommodationNeeded?: string,
+  hotelNights?: string[]
+): string {
+  const travelMethodDisplay = travelMethod ? travelMethod.charAt(0).toUpperCase() + travelMethod.slice(1) : 'Not specified'
+  const accommodationDisplay = accommodationNeeded === 'yes' 
+    ? (hotelNights && hotelNights.length > 0 ? hotelNights.join(', ') : 'Yes')
+    : 'No'
+
   return `
     <!DOCTYPE html>
     <html>
@@ -161,6 +173,8 @@ export function getTravelFormConfirmationEmail(name: string, eventTitle: string,
             <h3>Submission Details</h3>
             <p><strong>Event:</strong> ${eventTitle}</p>
             <p><strong>Region:</strong> ${region.toUpperCase()}</p>
+            <p><strong>Transport Method:</strong> ${travelMethodDisplay}</p>
+            <p><strong>Accommodation Needed:</strong> ${accommodationDisplay}</p>
             <p><strong>Status:</strong> Pending Review</p>
           </div>
           

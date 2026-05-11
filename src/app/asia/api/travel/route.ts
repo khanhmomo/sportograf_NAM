@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
       await sendEmail({
         to: body.email.toLowerCase(),
         subject: 'Sportograf - Travel Form Confirmation',
-        html: getTravelFormConfirmationEmail(body.name, eventTitle, 'Asia')
+        html: getTravelFormConfirmationEmail(body.name, eventTitle, 'Asia', body.travelMethod, body.accommodationNeeded, body.hotelNights)
       })
     } catch (emailError) {
       console.error('Failed to send confirmation email:', emailError)
