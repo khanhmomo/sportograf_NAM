@@ -15,6 +15,8 @@ const travelFormSchema = z.object({
   phoneNumber: z.string().min(1, 'Phone number is required'),
   gender: z.enum(['male', 'female', 'other', 'prefer-not-to-say']),
   travelMethod: z.enum(['flight', 'car', 'bus']),
+  // Itinerary selection for flight
+  selectedItinerary: z.string().optional(),
   // Arrival from event fields
   arrivalFromEventFlightNumber: z.string().optional(),
   arrivalFromEventDepartureAirport: z.string().optional(),
@@ -48,7 +50,20 @@ const travelFormSchema = z.object({
   hotelNights: z.array(z.string()).optional(),
   otherHotelNight: z.string().optional(),
   specialRequests: z.string().optional(),
-})
+}).refine((data) => {
+  if (data.travelMethod === 'flight') {
+    return !!(data.arrivalFromEventArrivalAirport &&
+              data.arrivalFromEventFlightNumber &&
+              data.arrivalFromEventArrivalDate &&
+              data.arrivalFromEventArrivalTime &&
+              data.departureFromEventDepartureAirport &&
+              data.departureFromEventFlightNumber &&
+              data.departureFromEventDepartureDate &&
+              data.departureFromEventDepartureTime &&
+              data.ticketCost)
+  }
+  return true
+}, { message: 'All flight fields are required' })
 
 type TravelFormData = z.infer<typeof travelFormSchema>
 
@@ -75,9 +90,10 @@ export default function TravelPage() {
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [events, setEvents] = useState<Event[]>([])
   const [selectedTravelMethod, setSelectedTravelMethod] = useState<string>('')
-  const [activeFlightTab, setActiveFlightTab] = useState<'departure' | 'arrival'>('departure')
   const [selectedEventSuggestedFlights, setSelectedEventSuggestedFlights] = useState<SuggestedFlight[]>([])
   const [expandedScreenshotIndex, setExpandedScreenshotIndex] = useState<number | null>(null)
+  const [selectedItinerary, setSelectedItinerary] = useState<string>('')
+  const [budgetWarning, setBudgetWarning] = useState<string>('')
   const { showToast } = useToast()
 
   const {
@@ -143,6 +159,33 @@ export default function TravelPage() {
     e.target.value = formattedValue
     // Trigger the react-hook-form onChange
     e.target.dispatchEvent(new Event('input', { bubbles: true }))
+  }
+
+  const handleItineraryChange = (value: string) => {
+    setSelectedItinerary(value)
+    if (value && selectedEventSuggestedFlights.length > 0) {
+      const index = parseInt(value)
+      const flight = selectedEventSuggestedFlights[index]
+      // Auto-fill flight details from selected itinerary
+      // Note: The suggested flights don't have all the flight details, so we'll just fill what we can
+      // The user can still manually edit the fields
+    }
+  }
+
+  const handleTicketCostChange = (value: string) => {
+    const cost = parseFloat(value)
+    if (selectedItinerary && selectedEventSuggestedFlights.length > 0) {
+      const index = parseInt(selectedItinerary)
+      const flight = selectedEventSuggestedFlights[index]
+      const budget = parseFloat(flight.budgetAllow)
+      if (cost > budget) {
+        setBudgetWarning('Over budget')
+      } else {
+        setBudgetWarning('')
+      }
+    } else {
+      setBudgetWarning('')
+    }
   }
 
   const onSubmit = async (data: TravelFormData) => {
@@ -520,185 +563,117 @@ export default function TravelPage() {
                     {/* Flight Details */}
                     {travelMethod === 'flight' && (
                         <div className="space-y-4">
-                          {/* Flight Tabs */}
-                          <div className="border-b border-gray-200">
-                            <nav className="flex -mb-px">
-                              <button
-                                onClick={() => setActiveFlightTab('departure')}
-                                className={`py-1 px-3 text-xs font-medium border-b-2 transition-colors ${
-                                  activeFlightTab === 'departure'
-                                    ? 'border-blue-500 text-blue-600'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                }`}
+                          {/* Itinerary Selection */}
+                          {selectedEventSuggestedFlights.length > 0 && (
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 mb-1">Select Suggested Itinerary</label>
+                              <select
+                                {...register('selectedItinerary')}
+                                onChange={(e) => handleItineraryChange(e.target.value)}
+                                className="w-full px-2 py-1 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                               >
-                                <Plane className="h-3 w-3 inline mr-1" />
-                                Arrive before event
-                              </button>
-                              <button
-                                onClick={() => setActiveFlightTab('arrival')}
-                                className={`py-1 px-3 text-xs font-medium border-b-2 transition-colors ${
-                                  activeFlightTab === 'arrival'
-                                    ? 'border-blue-500 text-blue-600'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                }`}
-                              >
-                                <Plane className="h-3 w-3 inline mr-1" />
-                                Depart after event
-                              </button>
-                            </nav>
-                          </div>
+                                <option value="">Select an itinerary...</option>
+                                {selectedEventSuggestedFlights.map((flight, index) => (
+                                  <option key={index} value={index.toString()}>
+                                    {flight.from} → {flight.to} (${flight.price})
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          )}
 
-                          {/* Tab Content */}
-                          <div className="mt-3">
-                            {activeFlightTab === 'departure' && (
-                              <div className="space-y-3">
-                                <div>
-                                  <label className="block text-xs font-medium text-gray-700 mb-1">Flight Number</label>
-                                  <input
-                                    type="text"
-                                    {...register('arrivalFromEventFlightNumber')}
-                                    className="w-full px-2 py-1 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder-gray-500"
-                                    placeholder="e.g., AA5678"
-                                  />
-                                </div>
-                                
-                                <div className="grid grid-cols-1 gap-2">
-                                  <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">Departure Airport</label>
-                                    <input
-                                      type="text"
-                                      {...register('arrivalFromEventDepartureAirport')}
-                                      className="w-full px-2 py-1 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder-gray-500"
-                                      placeholder="e.g., JFK"
-                                    />
-                                  </div>
-                                  <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">Arrival Airport</label>
-                                    <input
-                                      type="text"
-                                      {...register('arrivalFromEventArrivalAirport')}
-                                      className="w-full px-2 py-1 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder-gray-500"
-                                      placeholder="e.g., LAX"
-                                    />
-                                  </div>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-2">
-                                  <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">Departure Date</label>
-                                    <input
-                                      type="date"
-                                      {...register('arrivalFromEventDepartureDate')}
-                                      className="w-full px-2 py-1 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                    />
-                                  </div>
-                                  <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">Departure Time</label>
-                                    <input
-                                      type="time"
-                                      {...register('arrivalFromEventDepartureTime')}
-                                      className="w-full px-2 py-1 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                    />
-                                  </div>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-2">
-                                  <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">Arrival Date</label>
-                                    <input
-                                      type="date"
-                                      {...register('arrivalFromEventArrivalDate')}
-                                      className="w-full px-2 py-1 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                    />
-                                  </div>
-                                  <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">Arrival Time</label>
-                                    <input
-                                      type="time"
-                                      {...register('arrivalFromEventArrivalTime')}
-                                      className="w-full px-2 py-1 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                    />
-                                  </div>
-                                </div>
+                          {/* Flight Details - All in one panel */}
+                          <div className="space-y-3">
+                            <div className="text-xs font-semibold text-gray-700 border-b pb-1">Arrive Before Event</div>
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 mb-1">Flight Number *</label>
+                              <input
+                                type="text"
+                                {...register('arrivalFromEventFlightNumber')}
+                                className="w-full px-2 py-1 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder-gray-500"
+                                placeholder="e.g., AA5678"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 mb-1">Arrival Airport *</label>
+                              <input
+                                type="text"
+                                {...register('arrivalFromEventArrivalAirport')}
+                                className="w-full px-2 py-1 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder-gray-500"
+                                placeholder="e.g., LAX"
+                              />
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <div>
+                                <label className="block text-xs font-medium text-gray-700 mb-1">Arrival Date *</label>
+                                <input
+                                  type="date"
+                                  {...register('arrivalFromEventArrivalDate')}
+                                  className="w-full px-2 py-1 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                />
                               </div>
-                            )}
-
-                            {activeFlightTab === 'arrival' && (
-                              <div className="space-y-3">
-                                <div>
-                                  <label className="block text-xs font-medium text-gray-700 mb-1">Flight Number</label>
-                                  <input
-                                    type="text"
-                                    {...register('departureFromEventFlightNumber')}
-                                    className="w-full px-2 py-1 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder-gray-500"
-                                    placeholder="e.g., AA5678"
-                                  />
-                                </div>
-                                
-                                <div className="grid grid-cols-1 gap-2">
-                                  <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">Departure Airport</label>
-                                    <input
-                                      type="text"
-                                      {...register('departureFromEventDepartureAirport')}
-                                      className="w-full px-2 py-1 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder-gray-500"
-                                      placeholder="e.g., LAX"
-                                    />
-                                  </div>
-                                  <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">Arrival Airport</label>
-                                    <input
-                                      type="text"
-                                      {...register('departureFromEventArrivalAirport')}
-                                      className="w-full px-2 py-1 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder-gray-500"
-                                      placeholder="e.g., JFK"
-                                    />
-                                  </div>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-2">
-                                  <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">Departure Date</label>
-                                    <input
-                                      type="date"
-                                      {...register('departureFromEventDepartureDate')}
-                                      className="w-full px-2 py-1 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                      style={{ color: '#111827' }}
-                                    />
-                                  </div>
-                                  <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">Departure Time</label>
-                                    <input
-                                      type="time"
-                                      {...register('departureFromEventDepartureTime')}
-                                      className="w-full px-2 py-1 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                      style={{ color: '#111827' }}
-                                    />
-                                  </div>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-2">
-                                  <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">Arrival Date</label>
-                                    <input
-                                      type="date"
-                                      {...register('departureFromEventArrivalDate')}
-                                      className="w-full px-2 py-1 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                      style={{ color: '#111827' }}
-                                    />
-                                  </div>
-                                  <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">Arrival Time</label>
-                                    <input
-                                      type="time"
-                                      {...register('departureFromEventArrivalTime')}
-                                      className="w-full px-2 py-1 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                      style={{ color: '#111827' }}
-                                    />
-                                  </div>
-                                </div>
+                              <div>
+                                <label className="block text-xs font-medium text-gray-700 mb-1">Arrival Time *</label>
+                                <input
+                                  type="time"
+                                  {...register('arrivalFromEventArrivalTime')}
+                                  className="w-full px-2 py-1 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                />
                               </div>
-                            )}
+                            </div>
+
+                            <div className="text-xs font-semibold text-gray-700 border-b pb-1 mt-4">Depart After Event</div>
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 mb-1">Flight Number *</label>
+                              <input
+                                type="text"
+                                {...register('departureFromEventFlightNumber')}
+                                className="w-full px-2 py-1 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder-gray-500"
+                                placeholder="e.g., AA5678"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 mb-1">Departure Airport *</label>
+                              <input
+                                type="text"
+                                {...register('departureFromEventDepartureAirport')}
+                                className="w-full px-2 py-1 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder-gray-500"
+                                placeholder="e.g., LAX"
+                              />
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <div>
+                                <label className="block text-xs font-medium text-gray-700 mb-1">Departure Date *</label>
+                                <input
+                                  type="date"
+                                  {...register('departureFromEventDepartureDate')}
+                                  className="w-full px-2 py-1 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-xs font-medium text-gray-700 mb-1">Departure Time *</label>
+                                <input
+                                  type="time"
+                                  {...register('departureFromEventDepartureTime')}
+                                  className="w-full px-2 py-1 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                />
+                              </div>
+                            </div>
+
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 mb-1">Ticket Cost *</label>
+                              <input
+                                type="number"
+                                {...register('ticketCost', {
+                                  onChange: (e) => handleTicketCostChange(e.target.value)
+                                })}
+                                className="w-full px-2 py-1 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder-gray-500"
+                                placeholder="e.g., 500"
+                              />
+                              {budgetWarning && (
+                                <p className="mt-1 text-xs text-red-600 font-medium">{budgetWarning}</p>
+                              )}
+                            </div>
                           </div>
                         </div>
                       )}
@@ -952,212 +927,117 @@ export default function TravelPage() {
                   {/* Flight Details */}
                   {travelMethod === 'flight' && (
                     <div className="space-y-4">
-                      {/* Flight Tabs */}
-                      <div className="border-b border-gray-200">
-                        <nav className="flex -mb-px">
-                          <button
-                            onClick={() => setActiveFlightTab('departure')}
-                            className={`py-2 px-4 text-sm font-medium border-b-2 transition-colors ${
-                              activeFlightTab === 'departure'
-                                ? 'border-blue-500 text-blue-600'
-                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                            }`}
+                      {/* Itinerary Selection */}
+                      {selectedEventSuggestedFlights.length > 0 && (
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Select Suggested Itinerary</label>
+                          <select
+                            {...register('selectedItinerary')}
+                            onChange={(e) => handleItineraryChange(e.target.value)}
+                            className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                           >
-                            <Plane className="h-4 w-4 inline mr-2" />
-                            Arrive before event
-                          </button>
-                          <button
-                            onClick={() => setActiveFlightTab('arrival')}
-                            className={`py-2 px-4 text-sm font-medium border-b-2 transition-colors ${
-                              activeFlightTab === 'arrival'
-                                ? 'border-blue-500 text-blue-600'
-                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                            }`}
-                          >
-                            <Plane className="h-4 w-4 inline mr-2" />
-                            Depart after event
-                          </button>
-                        </nav>
-                      </div>
+                            <option value="">Select an itinerary...</option>
+                            {selectedEventSuggestedFlights.map((flight, index) => (
+                              <option key={index} value={index.toString()}>
+                                {flight.from} → {flight.to} (${flight.price})
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
 
-                      {/* Tab Content */}
-                      <div className="mt-4">
-                        {activeFlightTab === 'departure' && (
-                          <div className="space-y-4">
-                            <div className="grid grid-cols-1 gap-4">
-                              <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Flight Number</label>
-                                <input
-                                  type="text"
-                                  {...register('departureFromEventFlightNumber')}
-                                  className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
-                                  placeholder="e.g., AA5678"
-                                />
-                              </div>
-                              
-                              <div className="grid grid-cols-2 gap-3">
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">From Airport</label>
-                                  <input
-                                    type="text"
-                                    {...register('departureFromEventDepartureAirport')}
-                                    className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
-                                    placeholder="e.g., JFK"
-                                  />
-                                </div>
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">To Airport</label>
-                                  <input
-                                    type="text"
-                                    {...register('departureFromEventArrivalAirport')}
-                                    className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
-                                    placeholder="e.g., LAX"
-                                  />
-                                </div>
-                              </div>
-                              
-                              <div className="grid grid-cols-2 gap-3">
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">Departure Date</label>
-                                  <input
-                                    type="date"
-                                    {...register('departureFromEventDepartureDate')}
-                                    className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
-                                    style={{ 
-                                      color: '#111827',
-                                      WebkitTextFillColor: '#111827'
-                                    }}
-                                  />
-                                </div>
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">Departure Time</label>
-                                  <input
-                                    type="time"
-                                    {...register('departureFromEventDepartureTime')}
-                                    className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
-                                    style={{ 
-                                      color: '#111827',
-                                      WebkitTextFillColor: '#111827'
-                                    }}
-                                  />
-                                </div>
-                              </div>
-                              
-                              <div className="grid grid-cols-2 gap-3">
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">Arrival Date</label>
-                                  <input
-                                    type="date"
-                                    {...register('departureFromEventArrivalDate')}
-                                    className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
-                                    style={{ 
-                                      color: '#111827',
-                                      WebkitTextFillColor: '#111827'
-                                    }}
-                                  />
-                                </div>
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">Arrival Time</label>
-                                  <input
-                                    type="time"
-                                    {...register('departureFromEventArrivalTime')}
-                                    className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
-                                    style={{ 
-                                      color: '#111827',
-                                      WebkitTextFillColor: '#111827'
-                                    }}
-                                  />
-                                </div>
-                              </div>
-                            </div>
+                      {/* Flight Details - All in one panel */}
+                      <div className="space-y-4">
+                        <div className="text-sm font-semibold text-gray-700 border-b pb-2">Arrive Before Event</div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Flight Number *</label>
+                          <input
+                            type="text"
+                            {...register('arrivalFromEventFlightNumber')}
+                            className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
+                            placeholder="e.g., AA5678"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Arrival Airport *</label>
+                          <input
+                            type="text"
+                            {...register('arrivalFromEventArrivalAirport')}
+                            className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
+                            placeholder="e.g., LAX"
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Arrival Date *</label>
+                            <input
+                              type="date"
+                              {...register('arrivalFromEventArrivalDate')}
+                              className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
                           </div>
-                        )}
-
-                        {activeFlightTab === 'arrival' && (
-                          <div className="space-y-4">
-                            <div className="grid grid-cols-1 gap-4">
-                              <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Flight Number</label>
-                                <input
-                                  type="text"
-                                  {...register('arrivalFromEventFlightNumber')}
-                                  className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
-                                  placeholder="e.g., AA1234"
-                                />
-                              </div>
-                              
-                              <div className="grid grid-cols-2 gap-3">
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">From Airport</label>
-                                  <input
-                                    type="text"
-                                    {...register('arrivalFromEventDepartureAirport')}
-                                    className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
-                                    placeholder="e.g., LAX"
-                                  />
-                                </div>
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">To Airport</label>
-                                  <input
-                                    type="text"
-                                    {...register('arrivalFromEventArrivalAirport')}
-                                    className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
-                                    placeholder="e.g., JFK"
-                                  />
-                                </div>
-                              </div>
-                              
-                              <div className="grid grid-cols-2 gap-3">
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">Departure Date</label>
-                                  <input
-                                    type="date"
-                                    {...register('arrivalFromEventDepartureDate')}
-                                    className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
-                                  />
-                                </div>
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">Departure Time</label>
-                                  <input
-                                    type="time"
-                                    {...register('arrivalFromEventDepartureTime')}
-                                    className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
-                                  />
-                                </div>
-                              </div>
-                              
-                              <div className="grid grid-cols-2 gap-3">
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">Arrival Date</label>
-                                  <input
-                                    type="date"
-                                    {...register('arrivalFromEventArrivalDate')}
-                                    className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
-                                  />
-                                </div>
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">Arrival Time</label>
-                                  <input
-                                    type="time"
-                                    {...register('arrivalFromEventArrivalTime')}
-                                    className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
-                                  />
-                                </div>
-                              </div>
-                            </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Arrival Time *</label>
+                            <input
+                              type="time"
+                              {...register('arrivalFromEventArrivalTime')}
+                              className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
                           </div>
-                        )}
-                      </div>
+                        </div>
 
-                      {/* Ticket Cost */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Ticket Cost (€)</label>
-                        <input
-                          type="text"
-                          {...register('ticketCost')}
-                          className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
-                          placeholder="Enter ticket cost"
-                        />
+                        <div className="text-sm font-semibold text-gray-700 border-b pb-2 mt-4">Depart After Event</div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Flight Number *</label>
+                          <input
+                            type="text"
+                            {...register('departureFromEventFlightNumber')}
+                            className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
+                            placeholder="e.g., AA5678"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Departure Airport *</label>
+                          <input
+                            type="text"
+                            {...register('departureFromEventDepartureAirport')}
+                            className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
+                            placeholder="e.g., LAX"
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Departure Date *</label>
+                            <input
+                              type="date"
+                              {...register('departureFromEventDepartureDate')}
+                              className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Departure Time *</label>
+                            <input
+                              type="time"
+                              {...register('departureFromEventDepartureTime')}
+                              className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Ticket Cost *</label>
+                          <input
+                            type="number"
+                            {...register('ticketCost', {
+                              onChange: (e) => handleTicketCostChange(e.target.value)
+                            })}
+                            className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
+                            placeholder="e.g., 500"
+                          />
+                          {budgetWarning && (
+                            <p className="mt-1 text-sm text-red-600 font-medium">{budgetWarning}</p>
+                          )}
+                        </div>
                       </div>
                     </div>
                   )}

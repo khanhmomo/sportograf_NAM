@@ -15,6 +15,7 @@ interface TravelForm {
   eventId: string
   eventTitle: string
   travelMethod: string
+  selectedItinerary?: string
   // Flight specific
   arrivalFromEventFlightNumber?: string
   arrivalFromEventDepartureAirport?: string
@@ -60,6 +61,16 @@ interface Event {
   startDate: string
   endDate: string
   location: string
+  suggestedFlights?: SuggestedFlight[]
+}
+
+interface SuggestedFlight {
+  from: string
+  to: string
+  price: string
+  budgetAllow: string
+  link: string
+  screenshot?: string
 }
 
 function TravelFormsPageContent() {
@@ -422,7 +433,7 @@ function TravelFormsPageContent() {
                   {travelForms.map((form) => {
                     const getArrivalAirportStation = () => {
                       if (form.travelMethod === 'flight') {
-                        return form.arrivalFromEventDepartureAirport || ''
+                        return form.arrivalFromEventArrivalAirport || ''
                       } else if (form.travelMethod === 'bus') {
                         return form.arrivalStation || ''
                       }
@@ -431,7 +442,7 @@ function TravelFormsPageContent() {
                     
                     const getDepartureAirportStation = () => {
                       if (form.travelMethod === 'flight') {
-                        return form.departureFromEventArrivalAirport || ''
+                        return form.departureFromEventDepartureAirport || ''
                       } else if (form.travelMethod === 'bus') {
                         return form.departureStation || ''
                       }
@@ -509,9 +520,36 @@ function TravelFormsPageContent() {
                       }
                       return ''
                     }
+
+                    // Check if ticket cost is over budget
+                    const isOverBudget = () => {
+                      if (!form.selectedItinerary || !form.ticketCost || form.travelMethod !== 'flight') {
+                        return false
+                      }
+                      
+                      const event = events.find(e => e.id === form.eventId)
+                      if (!event || !event.suggestedFlights) {
+                        return false
+                      }
+                      
+                      const itineraryIndex = parseInt(form.selectedItinerary)
+                      const flight = event.suggestedFlights[itineraryIndex]
+                      if (!flight) {
+                        return false
+                      }
+                      
+                      const budget = parseFloat(flight.budgetAllow)
+                      const cost = parseFloat(form.ticketCost)
+                      
+                      return cost > budget
+                    }
+                    
+                    const rowClass = isOverBudget() 
+                      ? 'bg-red-100 hover:bg-red-200' 
+                      : 'hover:bg-gray-50'
                     
                     return (
-                      <tr key={form.id} className="hover:bg-gray-50">
+                      <tr key={form.id} className={rowClass}>
                         <td className="px-2 py-2 whitespace-nowrap text-[10px] font-medium text-gray-900 border-r border-gray-300">{form.name}</td>
                         <td className="px-2 py-2 whitespace-nowrap text-[10px] text-gray-900 border-r border-gray-300">{form.acronym}</td>
                         <td className="px-2 py-2 whitespace-nowrap text-[10px] text-gray-900 capitalize border-r border-gray-300">{form.travelMethod}</td>
@@ -646,9 +684,36 @@ function TravelFormsPageContent() {
                   }
                   return ''
                 }
+
+                // Check if ticket cost is over budget
+                const isOverBudget = () => {
+                  if (!form.selectedItinerary || !form.ticketCost || form.travelMethod !== 'flight') {
+                    return false
+                  }
+                  
+                  const event = events.find(e => e.id === form.eventId)
+                  if (!event || !event.suggestedFlights) {
+                    return false
+                  }
+                  
+                  const itineraryIndex = parseInt(form.selectedItinerary)
+                  const flight = event.suggestedFlights[itineraryIndex]
+                  if (!flight) {
+                    return false
+                  }
+                  
+                  const budget = parseFloat(flight.budgetAllow)
+                  const cost = parseFloat(form.ticketCost)
+                  
+                  return cost > budget
+                }
+
+                const cardClass = isOverBudget()
+                  ? 'bg-red-100 rounded-lg shadow p-4'
+                  : 'bg-white rounded-lg shadow p-4'
                 
                 return (
-                  <div key={form.id} className="bg-white rounded-lg shadow p-4">
+                  <div key={form.id} className={cardClass}>
                     <div className="flex justify-between items-start mb-3">
                       <div className="flex-1 min-w-0">
                         <h3 className="text-base font-semibold text-gray-900 truncate">{form.acronym} - {form.name}</h3>
