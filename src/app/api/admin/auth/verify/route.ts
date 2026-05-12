@@ -15,10 +15,14 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Verify token
-    jwt.verify(token, JWT_SECRET)
+    // Verify token and decode
+    const decoded = jwt.verify(token, JWT_SECRET) as any
     
-    return NextResponse.json({ verified: true })
+    return NextResponse.json({ 
+      verified: true,
+      role: decoded.role,
+      username: decoded.username
+    })
   } catch (error) {
     return NextResponse.json(
       { error: 'Invalid token' },

@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react'
 import { Plane, Car, Train, Calendar, MapPin, User, Mail, Phone, Eye, Trash2, Pencil, Download } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
 import * as XLSX from 'xlsx'
+import { isAdmin } from '@/lib/auth'
 
 interface TravelForm {
   id: string
@@ -85,8 +86,12 @@ function TravelFormsPageContent() {
   const [isEditing, setIsEditing] = useState(false)
   const [loading, setLoading] = useState(true)
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date())
+  const [userRole, setUserRole] = useState<string | null>(null)
 
   useEffect(() => {
+    // Load role from localStorage
+    setUserRole(localStorage.getItem('admin_role') || 'admin')
+    
     fetchData()
     
     // Set up real-time polling for travel forms
@@ -568,22 +573,24 @@ function TravelFormsPageContent() {
                         <td className="px-2 py-2 whitespace-nowrap text-[10px] text-gray-900 border-r border-gray-300">{form.ticketCost || ''}</td>
                         <td className="px-2 py-2 whitespace-nowrap text-[10px] text-gray-900 border-r border-gray-300">{form.specialRequests || ''}</td>
                         <td className="px-2 py-2 whitespace-nowrap text-[10px] text-gray-900">
-                          <div className="flex space-x-1">
-                            <button
-                              onClick={() => handleEdit(form)}
-                              className="text-blue-600 hover:text-blue-900 p-1 hover:bg-blue-50 rounded"
-                              title="Edit"
-                            >
-                              <Pencil className="h-3 w-3" />
-                            </button>
-                            <button
-                              onClick={() => deleteTravelForm(form.id)}
-                              className="text-red-600 hover:text-red-900 p-1 hover:bg-red-50 rounded"
-                              title="Delete"
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </button>
-                          </div>
+                          {userRole === 'admin' && (
+                            <div className="flex space-x-1">
+                              <button
+                                onClick={() => handleEdit(form)}
+                                className="text-blue-600 hover:text-blue-900 p-1 hover:bg-blue-50 rounded"
+                                title="Edit"
+                              >
+                                <Pencil className="h-3 w-3" />
+                              </button>
+                              <button
+                                onClick={() => deleteTravelForm(form.id)}
+                                className="text-red-600 hover:text-red-900 p-1 hover:bg-red-50 rounded"
+                                title="Delete"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </button>
+                            </div>
+                          )}
                         </td>
                       </tr>
                     )
@@ -719,22 +726,24 @@ function TravelFormsPageContent() {
                         <h3 className="text-base font-semibold text-gray-900 truncate">{form.acronym} - {form.name}</h3>
                         <div className="text-xs text-gray-900 mt-1">{form.email}</div>
                       </div>
-                      <div className="flex space-x-2 ml-2">
-                        <button
-                          onClick={() => handleEdit(form)}
-                          className="text-blue-600 p-1 hover:bg-blue-50 rounded"
-                          title="Edit"
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => deleteTravelForm(form.id)}
-                          className="text-red-600 p-1 hover:bg-red-50 rounded"
-                          title="Delete"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
+                      {userRole === 'admin' && (
+                        <div className="flex space-x-2 ml-2">
+                          <button
+                            onClick={() => handleEdit(form)}
+                            className="text-blue-600 p-1 hover:bg-blue-50 rounded"
+                            title="Edit"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => deleteTravelForm(form.id)}
+                            className="text-red-600 p-1 hover:bg-red-50 rounded"
+                            title="Delete"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      )}
                     </div>
                     
                     <div className="space-y-2 text-xs">

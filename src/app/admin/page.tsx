@@ -6,6 +6,7 @@ import { format } from 'date-fns'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import ImageUpload from '@/components/ImageUpload'
+import { isAdmin, canEdit, canDelete } from '@/lib/auth'
 
 interface DashboardStats {
   totalEvents: number
@@ -55,6 +56,7 @@ interface EventRegistration {
 
 export default function AdminDashboard() {
   const router = useRouter()
+  const [userRole, setUserRole] = useState<string | null>(null)
   const [stats, setStats] = useState<DashboardStats>({
     totalEvents: 0,
     totalRegistrations: 0,
@@ -104,11 +106,16 @@ export default function AdminDashboard() {
           router.push('/admin/login')
           return
         }
+        const data = await response.json()
+        setUserRole(data.role || 'admin')
       } catch (error) {
         router.push('/admin/login')
         return
       }
     }
+
+    // Load role from localStorage as fallback
+    setUserRole(localStorage.getItem('admin_role') || 'admin')
 
     checkAuth()
   }, [router])
@@ -386,6 +393,8 @@ export default function AdminDashboard() {
 
   const handleLogout = () => {
     document.cookie = 'admin_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'
+    localStorage.removeItem('admin_role')
+    localStorage.removeItem('admin_username')
     router.push('/admin/login')
   }
 
@@ -476,14 +485,16 @@ export default function AdminDashboard() {
                   <option value="sa">South America</option>
                   <option value="asia">Asia</option>
                 </select>
-                <Link
-                  href="/admin/events/create"
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center text-sm md:text-base"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  <span className="hidden sm:inline">Create Event</span>
-                  <span className="sm:hidden">Create</span>
-                </Link>
+                {userRole === 'admin' && (
+                  <Link
+                    href="/admin/events/create"
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center text-sm md:text-base"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    <span className="hidden sm:inline">Create Event</span>
+                    <span className="sm:hidden">Create</span>
+                  </Link>
+                )}
               </div>
             </div>
 
@@ -564,20 +575,24 @@ export default function AdminDashboard() {
                                 <Users className="h-4 w-4" />
                               </button>
                             )}
-                            <button
-                              onClick={() => openEditModal(event.id)}
-                              className="text-blue-600 hover:text-blue-900"
-                              title="Edit"
-                            >
-                              <Edit className="h-4 w-4" />
-                            </button>
-                            <button
-                              onClick={() => deleteEvent(event.id)}
-                              className="text-red-600 hover:text-red-900"
-                              title="Delete"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
+                            {userRole === 'admin' && (
+                              <>
+                                <button
+                                  onClick={() => openEditModal(event.id)}
+                                  className="text-blue-600 hover:text-blue-900"
+                                  title="Edit"
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </button>
+                                <button
+                                  onClick={() => deleteEvent(event.id)}
+                                  className="text-red-600 hover:text-red-900"
+                                  title="Delete"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </button>
+                              </>
+                            )}
                           </td>
                         </tr>
                       ))}
@@ -646,22 +661,24 @@ export default function AdminDashboard() {
                             </button>
                           )}
                         </div>
-                        <div className="flex items-center space-x-1">
-                          <button
-                            onClick={() => openEditModal(event.id)}
-                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                            title="Edit"
-                          >
-                            <Edit className="h-4 w-4" />
-                          </button>
-                          <button
-                            onClick={() => deleteEvent(event.id)}
-                            className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                            title="Delete"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
+                        {userRole === 'admin' && (
+                          <div className="flex items-center space-x-1">
+                            <button
+                              onClick={() => openEditModal(event.id)}
+                              className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                              title="Edit"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={() => deleteEvent(event.id)}
+                              className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                              title="Delete"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -738,13 +755,15 @@ export default function AdminDashboard() {
                             </div>
                           </div>
                         </div>
-                        <button
-                          onClick={() => deleteRegistration(registration._id)}
-                          className="flex-shrink-0 p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Delete"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
+                        {userRole === 'admin' && (
+                          <button
+                            onClick={() => deleteRegistration(registration._id)}
+                            className="flex-shrink-0 p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            title="Delete"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))}

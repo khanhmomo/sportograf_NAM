@@ -2,8 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import jwt from 'jsonwebtoken'
 
 // Admin credentials (in production, these should be in environment variables)
-const ADMIN_USERNAME = 'giangpham'
-const ADMIN_PASSWORD = 'sportograf@admin'
+const ADMIN_CREDENTIALS = [
+  { username: 'giangpham', password: 'sportograf@admin', role: 'admin' },
+  { username: 'team-leader', password: 'sportograf@leader', role: 'team-leader' }
+]
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 
 export async function POST(request: NextRequest) {
@@ -11,7 +13,11 @@ export async function POST(request: NextRequest) {
     const { username, password } = await request.json()
 
     // Validate credentials
-    if (username !== ADMIN_USERNAME || password !== ADMIN_PASSWORD) {
+    const admin = ADMIN_CREDENTIALS.find(
+      cred => cred.username === username && cred.password === password
+    )
+
+    if (!admin) {
       return NextResponse.json(
         { error: 'Invalid username or password' },
         { status: 401 }
@@ -21,8 +27,8 @@ export async function POST(request: NextRequest) {
     // Generate JWT token
     const token = jwt.sign(
       { 
-        username: ADMIN_USERNAME,
-        role: 'admin',
+        username: admin.username,
+        role: admin.role,
         loginTime: Date.now()
       },
       JWT_SECRET,
@@ -32,7 +38,8 @@ export async function POST(request: NextRequest) {
     // Set HTTP-only cookie
     const response = NextResponse.json({
       message: 'Login successful',
-      token: token
+      token: token,
+      role: admin.role
     })
 
     response.cookies.set('admin_token', token, {

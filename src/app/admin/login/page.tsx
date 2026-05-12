@@ -26,6 +26,12 @@ export default function AdminLogin() {
       })
 
       if (response.ok) {
+        const data = await response.json()
+        // Store role in localStorage for client-side permission checks
+        if (data.role) {
+          localStorage.setItem('admin_role', data.role)
+          localStorage.setItem('admin_username', data.username || '')
+        }
         // Token is automatically set in HTTP-only cookie by the API
         // Add small delay to ensure cookie is set before redirect
         setTimeout(() => {

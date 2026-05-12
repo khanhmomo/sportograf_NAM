@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -8,6 +8,7 @@ import { z } from 'zod'
 import { Calendar, MapPin, Users, ArrowLeft, Plus, Trash2, Plane } from 'lucide-react'
 import Link from 'next/link'
 import ImageUpload from '@/components/ImageUpload'
+import { isAdmin } from '@/lib/auth'
 
 const eventFormSchema = z.object({
   title: z.string().min(1, 'Event title is required'),
@@ -35,6 +36,14 @@ export default function CreateEventPage() {
     { from: '', to: '', price: '', budgetAllow: '', link: '' }
   ])
   const [activeFlightIndex, setActiveFlightIndex] = useState<number | null>(null)
+
+  useEffect(() => {
+    // Check if user is admin, if not redirect to admin dashboard
+    if (!isAdmin()) {
+      router.push('/admin')
+      return
+    }
+  }, [router])
 
   const {
     register,
