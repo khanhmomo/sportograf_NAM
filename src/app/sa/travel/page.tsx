@@ -137,21 +137,9 @@ export default function TravelPage() {
   }
 
   const formatPhoneNumber = (value: string) => {
-    // Remove all non-digit characters
-    const phoneNumber = value.replace(/\D/g, '')
-    
-    // Check if the input is empty or too long
-    if (phoneNumber.length === 0) return ''
-    if (phoneNumber.length > 10) return phoneNumber.slice(0, 10)
-    
-    // Format the phone number
-    if (phoneNumber.length <= 3) {
-      return phoneNumber
-    } else if (phoneNumber.length <= 6) {
-      return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`
-    } else {
-      return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6)}`
-    }
+    // Remove non-digit characters and limit to 15 digits
+    const phoneNumber = value.replace(/\D/g, '').slice(0, 15)
+    return phoneNumber
   }
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
