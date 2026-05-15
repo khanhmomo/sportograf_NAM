@@ -322,7 +322,6 @@ export default function TravelPage() {
                       </svg>
                     </div>
                   </div>
-                  <p className="mt-1 text-xs text-gray-500">Format: (555) 123-4567</p>
                   {errors.phoneNumber && (
                     <p className="mt-1 text-sm text-red-600">
                       {errors.phoneNumber.message}
