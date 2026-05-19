@@ -425,9 +425,9 @@ function TravelFormsPageContent() {
                     <th className="px-2 py-2 text-left text-[10px] font-bold text-gray-900 uppercase tracking-wider border-r border-gray-300">Arrival Airport/Station</th>
                     <th className="px-2 py-2 text-left text-[10px] font-bold text-gray-900 uppercase tracking-wider border-r border-gray-300">Flight/Train #</th>
                     <th className="px-2 py-2 text-left text-[10px] font-bold text-gray-900 uppercase tracking-wider border-r border-gray-300">Arrival Date</th>
-                    <th className="px-2 py-2 text-left text-[10px] font-bold text-gray-900 uppercase tracking-wider border-r border-gray-300">Departure Date</th>
-                    <th className="px-2 py-2 text-left text-[10px] font-bold text-gray-900 uppercase tracking-wider border-r border-gray-300">Flight/Train #</th>
                     <th className="px-2 py-2 text-left text-[10px] font-bold text-gray-900 uppercase tracking-wider border-r border-gray-300">Departure Airport/Station</th>
+                    <th className="px-2 py-2 text-left text-[10px] font-bold text-gray-900 uppercase tracking-wider border-r border-gray-300">Flight/Train #</th>
+                    <th className="px-2 py-2 text-left text-[10px] font-bold text-gray-900 uppercase tracking-wider border-r border-gray-300">Departure Date</th>
                     <th className="px-2 py-2 text-left text-[10px] font-bold text-gray-900 uppercase tracking-wider border-r border-gray-300">Car Rental</th>
                     <th className="px-2 py-2 text-left text-[10px] font-bold text-gray-900 uppercase tracking-wider border-r border-gray-300">Ticket Cost</th>
                     <th className="px-2 py-2 text-left text-[10px] font-bold text-gray-900 uppercase tracking-wider border-r border-gray-300">Note</th>
@@ -565,10 +565,10 @@ function TravelFormsPageContent() {
                         <td className="px-2 py-2 whitespace-nowrap text-[10px] text-gray-900 capitalize border-r border-gray-300">{form.gender || ''}</td>
                         <td className="px-2 py-2 whitespace-nowrap text-[10px] text-gray-900 border-r border-gray-300">{getArrivalAirportStation()}</td>
                         <td className="px-2 py-2 whitespace-nowrap text-[10px] text-gray-900 border-r border-gray-300">{getFlightTrainNumber()}</td>
-                        <td className="px-2 py-2 whitespace-nowrap text-[10px] text-gray-900 border-r border-gray-300">{formatDate(getDepartureDate())}</td>
                         <td className="px-2 py-2 whitespace-nowrap text-[10px] text-gray-900 border-r border-gray-300">{formatDate(getArrivalDate())}</td>
-                        <td className="px-2 py-2 whitespace-nowrap text-[10px] text-gray-900 border-r border-gray-300">{getDepartureFlightTrainNumber()}</td>
                         <td className="px-2 py-2 whitespace-nowrap text-[10px] text-gray-900 border-r border-gray-300">{getDepartureAirportStation()}</td>
+                        <td className="px-2 py-2 whitespace-nowrap text-[10px] text-gray-900 border-r border-gray-300">{getDepartureFlightTrainNumber()}</td>
+                        <td className="px-2 py-2 whitespace-nowrap text-[10px] text-gray-900 border-r border-gray-300">{formatDate(getDepartureDate())}</td>
                         <td className="px-2 py-2 whitespace-nowrap text-[10px] text-gray-900 border-r border-gray-300">{form.carRentalReservation || ''}</td>
                         <td className="px-2 py-2 whitespace-nowrap text-[10px] text-gray-900 border-r border-gray-300">{form.ticketCost || ''}</td>
                         <td className="px-2 py-2 whitespace-nowrap text-[10px] text-gray-900 border-r border-gray-300">{form.specialRequests || ''}</td>
