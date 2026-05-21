@@ -168,8 +168,6 @@ export default function TravelPage() {
   const onSubmit = async (data: TravelFormData) => {
     setIsSubmitting(true)
     try {
-      console.log('Submitting travel form:', data)
-      
       const response = await fetch('/sa/api/travel', {
         method: 'POST',
         headers: {
@@ -177,8 +175,6 @@ export default function TravelPage() {
         },
         body: JSON.stringify(data),
       })
-
-      console.log('Response status:', response.status)
 
       if (response.ok) {
         setIsSubmitted(true)
@@ -192,11 +188,8 @@ export default function TravelPage() {
         let errorMessage = 'Failed to submit travel form'
         try {
           const error = await response.json()
-          console.error('Travel form submission error:', error)
-          console.error('Error status:', response.status)
           errorMessage = error.error || error.message || errorMessage
         } catch (e) {
-          console.error('Failed to parse error response:', e)
           errorMessage = `Failed to submit travel form (Status: ${response.status})`
         }
         showToast({
@@ -206,7 +199,6 @@ export default function TravelPage() {
         })
       }
     } catch (error) {
-      console.error('Submission failed:', error)
       showToast({
         title: 'Submission Failed',
         message: 'Failed to submit travel form. Please check your connection and try again.',

@@ -118,13 +118,10 @@ export default function TravelPage() {
     if (eventId) {
       try {
         const selectedEvent = events.find(e => e.id === eventId)
-        console.log('Selected event:', selectedEvent)
-        console.log('Suggested flights:', selectedEvent?.suggestedFlights)
         // Ensure suggested flights is an array
         const flights = Array.isArray(selectedEvent?.suggestedFlights) ? selectedEvent.suggestedFlights : []
         setSelectedEventSuggestedFlights(flights)
       } catch (error) {
-        console.error('Error setting suggested flights:', error)
         setSelectedEventSuggestedFlights([])
       }
     } else {
@@ -137,7 +134,6 @@ export default function TravelPage() {
       const response = await fetch('/asia/api/events')
       if (response.ok) {
         const data = await response.json()
-        console.log('Fetched events:', data)
         setEvents(data)
       } else {
         console.error('Failed to fetch events:', response.status)
@@ -179,8 +175,6 @@ export default function TravelPage() {
   const onSubmit = async (data: TravelFormData) => {
     setIsSubmitting(true)
     try {
-      console.log('Submitting travel form:', data)
-      
       const response = await fetch('/asia/api/travel', {
         method: 'POST',
         headers: {
@@ -188,8 +182,6 @@ export default function TravelPage() {
         },
         body: JSON.stringify(data),
       })
-
-      console.log('Response status:', response.status)
 
       if (response.ok) {
         setIsSubmitted(true)
@@ -203,11 +195,8 @@ export default function TravelPage() {
         let errorMessage = 'Failed to submit travel form'
         try {
           const error = await response.json()
-          console.error('Travel form submission error:', error)
-          console.error('Error status:', response.status)
           errorMessage = error.error || error.message || errorMessage
         } catch (e) {
-          console.error('Failed to parse error response:', e)
           errorMessage = `Failed to submit travel form (Status: ${response.status})`
         }
         showToast({
@@ -217,7 +206,6 @@ export default function TravelPage() {
         })
       }
     } catch (error) {
-      console.error('Submission failed:', error)
       showToast({
         title: 'Submission Failed',
         message: 'Failed to submit travel form. Please check your connection and try again.',
@@ -557,7 +545,6 @@ export default function TravelPage() {
                               <select
                                 {...register('selectedItinerary')}
                                 onChange={(e) => {
-                                  console.log('Mobile dropdown changed to:', e.target.value)
                                   setValue('selectedItinerary', e.target.value)
                                 }}
                                 className="w-full px-2 py-1 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"

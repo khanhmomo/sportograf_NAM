@@ -25,7 +25,6 @@ export async function sendEmail({ to, subject, html, text }: EmailOptions): Prom
       html,
       text
     })
-    console.log('Email sent successfully to:', to)
   } catch (error) {
     console.error('Failed to send email:', error)
     throw error
