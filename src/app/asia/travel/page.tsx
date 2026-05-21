@@ -157,17 +157,23 @@ export default function TravelPage() {
   }
 
   const handleTicketCostChange = (value: string) => {
-    const cost = parseFloat(value)
-    if (selectedItinerary && selectedEventSuggestedFlights.length > 0) {
-      const index = parseInt(selectedItinerary)
-      const flight = selectedEventSuggestedFlights[index]
-      const budget = parseFloat(flight.budgetAllow)
-      if (cost > budget) {
-        setBudgetWarning('Over budget')
-      } else {
-        setBudgetWarning('')
+    try {
+      const cost = parseFloat(value)
+      if (selectedItinerary && selectedEventSuggestedFlights.length > 0) {
+        const index = parseInt(selectedItinerary)
+        if (!isNaN(index) && index >= 0 && index < selectedEventSuggestedFlights.length) {
+          const flight = selectedEventSuggestedFlights[index]
+          if (flight && flight.budgetAllow) {
+            const budget = parseFloat(flight.budgetAllow)
+            if (!isNaN(budget) && cost > budget) {
+              setBudgetWarning('Over budget')
+              return
+            }
+          }
+        }
       }
-    } else {
+      setBudgetWarning('')
+    } catch (error) {
       setBudgetWarning('')
     }
   }
