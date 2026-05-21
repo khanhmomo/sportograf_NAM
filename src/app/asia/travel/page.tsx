@@ -99,6 +99,7 @@ export default function TravelPage() {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
     reset,
   } = useForm<TravelFormData>({
@@ -555,6 +556,10 @@ export default function TravelPage() {
                               <label className="block text-xs font-medium text-gray-700 mb-1">Select Suggested Itinerary</label>
                               <select
                                 {...register('selectedItinerary')}
+                                onChange={(e) => {
+                                  console.log('Mobile dropdown changed to:', e.target.value)
+                                  setValue('selectedItinerary', e.target.value)
+                                }}
                                 className="w-full px-2 py-1 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                               >
                                 <option value="">Other...</option>
