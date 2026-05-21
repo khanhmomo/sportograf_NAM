@@ -115,8 +115,17 @@ export default function TravelPage() {
 
   useEffect(() => {
     if (eventId) {
-      const selectedEvent = events.find(e => e.id === eventId)
-      setSelectedEventSuggestedFlights(selectedEvent?.suggestedFlights || [])
+      try {
+        const selectedEvent = events.find(e => e.id === eventId)
+        console.log('Selected event:', selectedEvent)
+        console.log('Suggested flights:', selectedEvent?.suggestedFlights)
+        // Ensure suggested flights is an array
+        const flights = Array.isArray(selectedEvent?.suggestedFlights) ? selectedEvent.suggestedFlights : []
+        setSelectedEventSuggestedFlights(flights)
+      } catch (error) {
+        console.error('Error setting suggested flights:', error)
+        setSelectedEventSuggestedFlights([])
+      }
     } else {
       setSelectedEventSuggestedFlights([])
     }
@@ -127,6 +136,7 @@ export default function TravelPage() {
       const response = await fetch('/asia/api/events')
       if (response.ok) {
         const data = await response.json()
+        console.log('Fetched events:', data)
         setEvents(data)
       } else {
         console.error('Failed to fetch events:', response.status)
