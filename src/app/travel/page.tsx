@@ -126,13 +126,6 @@ export default function TravelPage() {
     return phoneNumber
   }
 
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formattedValue = formatPhoneNumber(e.target.value)
-    e.target.value = formattedValue
-    // Trigger the react-hook-form onChange
-    e.target.dispatchEvent(new Event('input', { bubbles: true }))
-  }
-
   const onSubmit = async (data: TravelFormData) => {
     setIsSubmitting(true)
     try {
