@@ -861,7 +861,7 @@ export default function TravelPage() {
                             />
                             <span className="text-gray-700">Other:</span>
                           </label>
-                          {watch('hotelNights')?.includes('other') && (
+                          {Array.isArray(watch('hotelNights')) && watch('hotelNights')?.includes('other') && (
                             <input
                               type="text"
                               {...register('otherHotelNight')}
