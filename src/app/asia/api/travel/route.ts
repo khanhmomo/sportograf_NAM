@@ -45,17 +45,17 @@ export async function POST(request: NextRequest) {
     
     const result = await travelFormsCollection.insertOne(newForm)
     
-    // Send confirmation email
-    try {
-      await sendEmail({
-        to: body.email.toLowerCase(),
-        subject: 'Sportograf - Travel Form Confirmation',
-        html: getTravelFormConfirmationEmail(body.name, eventTitle, 'Asia', body.travelMethod, body.accommodationNeeded, body.hotelNights)
-      })
-    } catch (emailError) {
-      console.error('Failed to send confirmation email:', emailError)
-      // Don't fail the request if email fails, just log it
-    }
+    // Send confirmation email - TEMPORARILY DISABLED
+    // try {
+    //   await sendEmail({
+    //     to: body.email.toLowerCase(),
+    //     subject: 'Sportograf - Travel Form Confirmation',
+    //     html: getTravelFormConfirmationEmail(body.name, eventTitle, 'Asia', body.travelMethod, body.accommodationNeeded, body.hotelNights)
+    //   })
+    // } catch (emailError) {
+    //   console.error('Failed to send confirmation email:', emailError)
+    //   // Don't fail the request if email fails, just log it
+    // }
     
     return NextResponse.json({
       id: result.insertedId.toString(),
